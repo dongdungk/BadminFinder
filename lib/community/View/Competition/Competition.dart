@@ -1,19 +1,10 @@
-// 커뮤니티 - 대회 - view ui
-
+//커뮤니티 - 대회 - view ui
 import 'package:flutter/material.dart';
 
-class CommunityPage extends StatefulWidget {
+class CommunityPage extends StatelessWidget {
   const CommunityPage({super.key});
 
-  @override
-  State<CommunityPage> createState() => _CommunityPageState();
-}
-
-class _CommunityPageState extends State<CommunityPage> {
-  int selectedTabIndex = 1;
-  final List<String> tabTitles = ['자유게시판', '대회', '뉴스', '설문조사'];
-
-  final List<Map<String, dynamic>> nationalCompetitions = [
+  final List<Map<String, dynamic>> nationalCompetitions = const [
     {
       "title": "제4회 올리버 배드민턴대회",
       "place": "(손내 사회체육관)",
@@ -40,7 +31,7 @@ class _CommunityPageState extends State<CommunityPage> {
     },
   ];
 
-  final List<Map<String, dynamic>> privateCompetitions = [
+  final List<Map<String, dynamic>> privateCompetitions = const [
     {
       "title": "서울시 배드민턴 클럽 대회",
       "place": "(강남 체육센터)",
@@ -69,89 +60,86 @@ class _CommunityPageState extends State<CommunityPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeColor = Colors.blueAccent;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 22),
 
-          // 상단 탭바
+          //상단 항목바
           SizedBox(
-            height: 30,
+            height: 48,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(tabTitles.length, (index) {
-                final isSelected = selectedTabIndex == index;
-                return GestureDetector(
-                  onTap: () => setState(() => selectedTabIndex = index),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        tabTitles[index],
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          color: isSelected ? Colors.black : Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      if (isSelected)
-                        Container(width: 24, height: 2, color: Colors.black),
-                    ],
-                  ),
-                );
-              }),
+              children: const [
+                Text('자유게시판', style: TextStyle(color: Colors.grey)),
+                Text('대회',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        decoration: TextDecoration.underline)),
+                Text('뉴스', style: TextStyle(color: Colors.grey)),
+                Text('설문조사', style: TextStyle(color: Colors.grey)),
+              ],
             ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
 
-          // 🔍 검색창
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: '대회 이름으로 검색',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const TextField(
+                decoration: InputDecoration(
+                  hintText: '대회 이름으로 검색',
+                  border: InputBorder.none,
+                  icon: Icon(Icons.search),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
               ),
             ),
           ),
 
           const SizedBox(height: 16),
 
-          // 🏆 리스트
           Expanded(
-            child: ListView(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                const SectionTitle(title: '전국대회', color: Colors.blue),
-                const SizedBox(height: 8),
-                ...nationalCompetitions.map((item) => CompetitionCard(item)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle('전국대회', Colors.blue),
+                  const SizedBox(height: 8),
+                  ...nationalCompetitions.map((e) => _buildCompetitionItem(e)),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                const SectionTitle(title: '사설대회', color: Colors.blue),
-                const SizedBox(height: 8),
-                ...privateCompetitions.map((item) => CompetitionCard(item)),
+                  _buildSectionTitle('사설대회', Colors.blue),
+                  const SizedBox(height: 8),
+                  ...privateCompetitions.map((e) => _buildCompetitionItem(e)),
 
-                const SizedBox(height: 60),
-              ],
+                  const SizedBox(height: 60),
+                ],
+              ),
             ),
           ),
         ],
       ),
 
-      // 하단 네비게이션
+
+      //하단 탭바
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 3,
-        selectedItemColor: Colors.blueAccent,
+        selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: '홈'),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart_outlined), label: '통계'),
@@ -162,15 +150,8 @@ class _CommunityPageState extends State<CommunityPage> {
       ),
     );
   }
-}
 
-class SectionTitle extends StatelessWidget {
-  final String title;
-  final Color color;
-  const SectionTitle({super.key, required this.title, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSectionTitle(String title, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -183,70 +164,38 @@ class SectionTitle extends StatelessWidget {
       child: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
     );
   }
-}
 
-class CompetitionCard extends StatelessWidget {
-  final Map<String, dynamic> data;
-  const CompetitionCard(this.data, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildCompetitionItem(Map<String, dynamic> data) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
         border: Border.all(color: Colors.deepPurpleAccent.withOpacity(0.3)),
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
       ),
       child: Row(
         children: [
-          // 왼쪽 텍스트
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2)),
-                const SizedBox(height: 6),
-                Text(
-                  data["title"],
-                  style: const TextStyle(
-                      fontSize: 15, fontWeight: FontWeight.bold),
-                ),
+                Text(data["title"], style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(
-                  data["place"],
-                  style: const TextStyle(color: Colors.grey),
-                ),
+                Text(data["place"], style: const TextStyle(color: Colors.grey)),
                 const SizedBox(height: 4),
-                Text(
-                  "${data["status"]} ${data["date"]}",
-                  style: const TextStyle(color: Colors.indigo),
-                ),
+                Text("${data["status"]} ${data["date"]}", style: const TextStyle(color: Colors.indigo)),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.thumb_up_alt_outlined,
-                        size: 14, color: Colors.grey),
+                    const Icon(Icons.thumb_up_alt_outlined, size: 14, color: Colors.grey),
                     const SizedBox(width: 4),
-                    Text("${data["likes"]}",
-                        style: const TextStyle(color: Colors.grey)),
+                    Text("${data["likes"]}", style: const TextStyle(color: Colors.grey)),
                   ],
                 ),
               ],
             ),
           ),
 
-          // 오른쪽 이미지
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.network(

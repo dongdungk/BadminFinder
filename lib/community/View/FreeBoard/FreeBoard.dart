@@ -1,235 +1,174 @@
-// 커뮤니티 - 자유게시판 - view ui
-
+//커뮤니티 - 자유게시판 view ui
 import 'package:flutter/material.dart';
 
-class CommunityBoardPage extends StatefulWidget {
-  const CommunityBoardPage({super.key});
-
-  @override
-  State<CommunityBoardPage> createState() => _CommunityBoardPageState();
-}
-
-class _CommunityBoardPageState extends State<CommunityBoardPage> {
-  int selectedTabIndex = 0; // 0: 자유게시판, 1: 대회, 2: 뉴스, 3: 설문조사
-  final List<String> tabTitles = ['자유게시판', '대회', '뉴스', '설문조사'];
-
-  // 게시물 데이터 예시
-  final List<Map<String, dynamic>> posts = [
-    {
-      "icon": "🏸",
-      "title": "오늘 저녁 7시 배드민턴 치실 분!",
-      "content": "체육관에서 복식으로 게임하실 분 구합니다",
-      "time": "15분 전",
-      "views": 83,
-      "likes": 3,
-      "comments": 0
-    },
-    {
-      "icon": "🔥",
-      "title": "배드민턴 동호회 정기 모임 안내",
-      "content": "이번 주 토요일 오전 10시 체육관에서 모임 있습니다!",
-      "time": "15분 전",
-      "views": 61,
-      "likes": 8,
-      "comments": 0
-    },
-    {
-      "icon": "🏸",
-      "title": "라켓 추천 부탁드려요",
-      "content": "초보자인데 어떤 라켓 사는 게 좋을까요?",
-      "time": "20분 전",
-      "views": 89,
-      "likes": 5,
-      "comments": 0
-    },
-    {
-      "icon": "💪",
-      "title": "스매시 잘 치는 법 알려주세요",
-      "content": "스매시를 쳐도 힘이 없고 각도가 안 나와요 ㅠㅠ",
-      "time": "30분 전",
-      "views": 109,
-      "likes": 6,
-      "comments": 0
-    },
-    {
-      "icon": "🏆",
-      "title": "배드민턴 대회 출전 모집!!",
-      "content": "다음 달 대학 리그전 나갈 분들 모집합니다!",
-      "time": "30분 전",
-      "views": 149,
-      "likes": 19,
-      "comments": 0
-    },
-    {
-      "icon": "🎯",
-      "title": "서브 정확도 올리는 꿀팁 공유합니다",
-      "content": "팔 각도를 조금만 조정하니까 서브가 훨씬 안정적이에요!",
-      "time": "40분 전",
-      "views": 52,
-      "likes": 7,
-      "comments": 2
-    },
-    {
-      "icon": "🧢",
-      "title": "오늘 새 라켓 샀어요!",
-      "content": "요넥스 나노플레어 너무 가볍고 좋네요 ㅎㅎ",
-      "time": "50분 전",
-      "views": 68,
-      "likes": 9,
-      "comments": 1
-    },
-    {
-      "icon": "💬",
-      "title": "혹시 배드민턴 동호회 추천해주실 분?",
-      "content": "서울 강남 쪽 활동적인 모임 있으면 알려주세요!",
-      "time": "1시간 전",
-      "views": 75,
-      "likes": 5,
-      "comments": 4
-    },
-    {
-      "icon": "🎥",
-      "title": "발리 영상 보고 자세 분석해주세요!",
-      "content": "폼이 좀 이상한데 뭐가 문제인지 모르겠어요ㅠ",
-      "time": "1시간 전",
-      "views": 91,
-      "likes": 6,
-      "comments": 5
-    },
-    {
-      "icon": "🏆",
-      "title": "다음 주 교내 대회 나가시는 분?",
-      "content": "복식 파트너 구합니다! 연습은 평일 저녁 가능합니다!",
-      "time": "1시간 전",
-      "views": 88,
-      "likes": 10,
-      "comments": 3
-    },
-    {
-      "icon": "🧤",
-      "title": "겨울철 라켓 그립 관리법 아시는 분?",
-      "content": "요즘 손에 땀이 덜 나서 미끄러워요ㅠ 팁 좀 주세요!",
-      "time": "2시간 전",
-      "views": 40,
-      "likes": 3,
-      "comments": 1
-    },
-    {
-      "icon": "📸",
-      "title": "어제 경기 사진 올려요!",
-      "content": "모두 즐겁게 쳤어요~ 다음에도 또 모여요!",
-      "time": "2시간 전",
-      "views": 100,
-      "likes": 12,
-      "comments": 4
-    },
-    {
-      "icon": "⏰",
-      "title": "아침 운동 같이 하실 분~",
-      "content": "출근 전 7시쯤 배드민턴 한 시간 하고 싶어요!",
-      "time": "2시간 전",
-      "views": 59,
-      "likes": 4,
-      "comments": 0
-    },
-    {
-      "icon": "🩹",
-      "title": "손목 통증 있으신 분 계신가요?",
-      "content": "요즘 스윙 후에 손목이 뻐근해서 고민이에요",
-      "time": "3시간 전",
-      "views": 77,
-      "likes": 2,
-      "comments": 3
-    },
-    {
-      "icon": "🍀",
-      "title": "오늘 경기에서 첫 승 했어요!!",
-      "content": "드디어 서브가 안정적으로 들어가네요 😊",
-      "time": "3시간 전",
-      "views": 82,
-      "likes": 11,
-      "comments": 5
-    }
-  ];
+class CommunityPage extends StatelessWidget {
+  const CommunityPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final themeColor = Colors.deepPurpleAccent.shade100;
+
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 30), // 상태바 아래 간격
+          const SizedBox(height: 22),
 
-          // 상단 탭바
-          SizedBox(
-            height: 30,
+          //상단 항목바
+          Container(
+            height: 48,
+            alignment: Alignment.center,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(tabTitles.length, (index) {
-                final isSelected = selectedTabIndex == index;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedTabIndex = index;
-                    });
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        tabTitles[index],
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          color: isSelected ? Colors.black : Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      if (isSelected)
-                        Container(
-                          width: 24,
-                          height: 2,
-                          color: Colors.black,
-                        ),
-                    ],
+              children: const [
+                Text(
+                  '자유게시판',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    decoration: TextDecoration.underline,
                   ),
-                );
-              }),
+                ),
+                Text('대회', style: TextStyle(color: Colors.grey)),
+                Text('뉴스', style: TextStyle(color: Colors.grey)),
+                Text('설문조사', style: TextStyle(color: Colors.grey)),
+              ],
             ),
           ),
 
           const SizedBox(height: 8),
 
-          // 게시물 리스트
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: posts.length,
-              itemBuilder: (context, index) {
-                final post = posts[index];
-                return _PostCard(post: post);
-              },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                children: [
+                  _buildPostItem(
+                    icon: '🔍',
+                    title: '오늘 저녁 7시 배드민턴 치실 분!',
+                    content: '체육관에서 복식으로 게임하실 분 구합니다',
+                    time: '15분 전',
+                    views: 81,
+                    likes: 3,
+                  ),
+                  _buildPostItem(
+                    icon: '🏸',
+                    title: '배드민턴 동호회 정기 모임 안내',
+                    content: '이번 주 토요일 오전 10시 체육관에서 모임 있습니다!',
+                    time: '15분 전',
+                    views: 61,
+                    likes: 4,
+                  ),
+                  _buildPostItem(
+                    icon: '🏸',
+                    title: '라켓 추천 부탁드려요',
+                    content: '초보자인데 어떤 라켓 사는 게 좋을까요?',
+                    time: '20분 전',
+                    views: 54,
+                    likes: 2,
+                  ),
+                  _buildPostItem(
+                    icon: '💪',
+                    title: '스매시 잘 치는 법 알려주세요',
+                    content: '스매시를 쳐도 힘이 없고 각도가 안 나와요 ㅠㅠ',
+                    time: '30분 전',
+                    views: 109,
+                    likes: 6,
+                  ),
+                  _buildPostItem(
+                    icon: '🏆',
+                    title: '배드민턴 대회 출전 모집!!',
+                    content: '다음 달 대학 리그전 나갈 분들 모집합니다!\n1등 상금 50만원, 2등 30만원입니다',
+                    time: '30분 전',
+                    views: 119,
+                    likes: 8,
+                  ),
+                  _buildPostItem(
+                    icon: '🏸',
+                    title: '서브 넣을 때 자꾸 네트에 걸려요',
+                    content: '롱 서브 연습하는데 계속 네트에 걸리네요.\n혹시 팁 있으신 분 계신가요?',
+                    time: '10/31',
+                    views: 92,
+                    likes: 3,
+                  ),
+                  _buildPostItem(
+                    icon: '⭐',
+                    title: '백핸드 클리어 드디어 성공!',
+                    content: '3개월 연습한 보람이 있네요 ㅋㅋ',
+                    time: '1시간 전',
+                    views: 98,
+                    likes: 9,
+                  ),
+                  _buildPostItem(
+                    icon: '🏟️',
+                    title: '체육관 예약 어떻게 하나요?',
+                    content: '학교 체육관 배드민턴 코트 예약 방법 아시는 분?',
+                    time: '1시간 전',
+                    views: 118,
+                    likes: 8,
+                  ),
+                  _buildPostItem(
+                    icon: '🏸',
+                    title: '셔틀콕 추천해주세요',
+                    content: '어떤 셔틀콕이 내구성 좋나요?',
+                    time: '1시간 전',
+                    views: 94,
+                    likes: 6,
+                  ),
+                  _buildPostItem(
+                    icon: '💪',
+                    title: '배드민턴 체력 훈련 루틴',
+                    content: '배드민턴 잘 치려면 어떤 운동을 해야 할까요?',
+                    time: '2시간 전',
+                    views: 108,
+                    likes: 10,
+                  ),
+                  _buildPostItem(
+                    icon: '😆',
+                    title: '오늘 복식 게임 개꿀잼ㅋㅋ',
+                    content: '오랜만에 땀 흘리며 운동하니까 너무 좋네요',
+                    time: '2시간 전',
+                    views: 118,
+                    likes: 8,
+                  ),
+                  _buildPostItem(
+                    icon: '🎥',
+                    title: '배드민턴 기술 영상 공유',
+                    content: '유튜브에서 좋은 강의 영상 찾았어요!',
+                    time: '2시간 전',
+                    views: 91,
+                    likes: 4,
+                  ),
+                  _buildPostItem(
+                    icon: '😢',
+                    title: '라켓 줄 끊어졌어요 ㅠㅠ',
+                    content: '스트링 재작업 어디서 하면 좋을까요?',
+                    time: '3시간 전',
+                    views: 95,
+                    likes: 5,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
       ),
 
-      // 글 작성 버튼
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: Colors.deepPurpleAccent,
+        backgroundColor: themeColor,
         child: const Icon(Icons.edit, color: Colors.white),
       ),
 
-      // 하단 네비게이션 바
+      //하단 탭바
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 3,
-        selectedItemColor: Colors.deepPurpleAccent,
+        selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         showSelectedLabels: true,
         showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: '홈'),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart_outlined), label: '통계'),
@@ -240,24 +179,21 @@ class _CommunityBoardPageState extends State<CommunityBoardPage> {
       ),
     );
   }
-}
 
-// ✅ 실제 게시물 카드 UI
-class _PostCard extends StatelessWidget {
-  final Map<String, dynamic> post;
-  const _PostCard({required this.post});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildPostItem({
+    required String icon,
+    required String title,
+    required String content,
+    required String time,
+    required int views,
+    required int likes,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
+        border: Border.all(color: Colors.deepPurpleAccent.withOpacity(0.4)),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.deepPurpleAccent.withOpacity(0.4),
-          width: 1.3,
-        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,46 +202,41 @@ class _PostCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(post["icon"], style: const TextStyle(fontSize: 18)),
+              Text(icon, style: const TextStyle(fontSize: 20)),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  post["title"],
+                  title,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
               ),
             ],
           ),
-
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
 
           // 내용
           Text(
-            post["content"],
+            content,
             style: const TextStyle(fontSize: 14, color: Colors.black87),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
 
-          // 하단 정보
           Row(
             children: [
-              Text(post["time"], style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-              const SizedBox(width: 6),
-              const Icon(Icons.person_outline, size: 14, color: Colors.grey),
-              const SizedBox(width: 2),
-              const Text('익명', style: TextStyle(fontSize: 12, color: Colors.grey)),
-              const SizedBox(width: 6),
+              Text(time, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              const SizedBox(width: 8),
               const Icon(Icons.remove_red_eye_outlined, size: 14, color: Colors.grey),
-              const SizedBox(width: 2),
-              Text('${post["views"]}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              const SizedBox(width: 6),
+              const SizedBox(width: 3),
+              Text('$views', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              const SizedBox(width: 8),
               const Icon(Icons.thumb_up_alt_outlined, size: 14, color: Colors.grey),
-              const SizedBox(width: 2),
-              Text('${post["likes"]}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              const SizedBox(width: 3),
+              Text('$likes', style: const TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
         ],
