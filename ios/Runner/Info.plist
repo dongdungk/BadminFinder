@@ -11,7 +11,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>com.teamtrow</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -31,7 +31,7 @@
 			<string>Google</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.187888948357-rursq1q9jqsq6lr5hpeuhshu9suhi4tt</string>
+				<string>com.googleusercontent.apps.430424752509-lrb347b7qkk9ha8lbmli7gb1tcq7i2og</string>
 			</array>
 		</dict>
 		<dict>

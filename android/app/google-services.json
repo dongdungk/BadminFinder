@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:430424752509:android:4aa084b17f0c0157858c14",
+        "mobilesdk_app_id": "1:430424752509:android:bcc6279d5b058399858c14",
         "android_client_info": {
-          "package_name": "com.teamtrow.victor"
+          "package_name": "com.teamtrow"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "430424752509-qn0us0mc4ogbl4fsm7i5q0ddbsa2f30m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAv35r9sxft6nk_CvDrE4SFoCDA-Vz9ano"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "430424752509-qn0us0mc4ogbl4fsm7i5q0ddbsa2f30m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "430424752509-lrb347b7qkk9ha8lbmli7gb1tcq7i2og.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.teamtrow"
+              }
+            }
+          ]
         }
       }
     }
