@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'community/View/FreeBoard/FreeBoardPost.dart';
+import 'router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,8 +10,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: CommunityPage(),
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      routerConfig: router,
     );
   }
 }
