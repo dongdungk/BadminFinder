@@ -1,6 +1,6 @@
 import 'dart:convert'; // 1. JSON 변환을 위해 'dart:convert' 임포트
 import 'package:http/http.dart' as http; // 2. 'http' 패키지 임포트
-import 'package:victor/map/model/facility_model.dart'; // 3. 붕어빵 틀(Model) 임포트
+import '/map/model/facility_model.dart'; // 3. 붕어빵 틀(Model) 임포트
 
 // "손과 발" (실제 외부 API/DB 통신)
 class FacilityService {

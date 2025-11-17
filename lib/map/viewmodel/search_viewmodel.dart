@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:victor/map/model/facility_model.dart'; // Model 임포트
-import 'package:victor/map/service/facility_service.dart'; // Service 임포트
+import '/map/model/facility_model.dart'; // Model 임포트
+import '/map/service/facility_service.dart'; // Service 임포트
 
 // "검색 뇌" (로직과 상태 관리)
 // ChangeNotifier는 '신호' (notifyListeners)를 보내기 위해 필요
