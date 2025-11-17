@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 // ⭐️ 1. [수정] go_router 패키지를 import 합니다.
 import 'package:go_router/go_router.dart';
 
-import '/map/view/facility_detail_screen.dart';
 import '/map/model/facility_model.dart';
 import '/map/viewmodel/search_viewmodel.dart';
 

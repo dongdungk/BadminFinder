@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 // ⭐️ 1. [수정] go_router 패키지를 import 합니다.
 import 'package:go_router/go_router.dart';
 
-// ---!!! [수정] 님의 PascalCase 파일명에 맞춤 !!!---
-import '/map/view/facility_detail_screen.dart';
-import '/map/view/search_screen.dart';
+
 // ---!!! [신규] Google Maps 임포트 !!!---
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
