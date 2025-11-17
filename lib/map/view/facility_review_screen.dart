@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
 class FacilityReviewScreen extends StatelessWidget {
-  // ---!!! [오류 수정] 'const' 키워드 제거 !!!---
-  // (final 멤버 변수들이 있으므로 const 생성자가 될 수 없습니다)
-  FacilityReviewScreen({super.key});
+  // facilityId를 받기 위한 변수 추가
+  final String facilityId;
 
-  // --- Mock 데이터 (임시) ---
+  // 생성자 수정 (const 제거 및 facilityId 추가)
+  FacilityReviewScreen({
+    super.key,
+    required this.facilityId,
+  });
+
+  // ⭐️⭐️⭐️ [수정 완료] 누락된 Mock 데이터 변수들 복구! ⭐️⭐️⭐️
   final double averageRating = 4.51;
   final int totalReviews = 127;
   final Map<int, int> ratingPercentages = {
@@ -41,14 +46,13 @@ class FacilityReviewScreen extends StatelessWidget {
       "comments": 2,
     }
   ];
-  // -------------------------
+  // ⭐️⭐️⭐️ ----------------------------------- ⭐️⭐️⭐️
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ---!!! 1. 님이 요청하신 AppBar !!!---
       appBar: AppBar(
-        title: const Text('서초구민체육센터'), // (임시) 시설 이름
+        title: Text('리뷰 (ID: $facilityId)'), // (임시) 시설 이름
         actions: [
           IconButton(
             icon: const Icon(Icons.star_border), // 즐겨찾기 전
@@ -60,12 +64,8 @@ class FacilityReviewScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          // ---!!! 2. 님이 요청하신 평점 요약 위젯 !!!---
           _buildRatingSummary(),
-
           const Divider(height: 20, thickness: 8, color: Color(0xFFF5F5F5)),
-
-          // ---!!! 3. 님이 요청하신 리뷰 목록 (아래로 이동) !!!---
           ListView.builder(
             padding: const EdgeInsets.all(16.0),
             shrinkWrap: true,
@@ -81,14 +81,12 @@ class FacilityReviewScreen extends StatelessWidget {
     );
   }
 
-  // ---!!! [신규] 평점 요약 UI 위젯 ---!!!
   Widget _buildRatingSummary() {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. 왼쪽: 평균 평점
           Expanded(
             flex: 2,
             child: Column(
@@ -100,7 +98,6 @@ class FacilityReviewScreen extends StatelessWidget {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  // ---!!! [오류 1 수정] '...' (spread operator) 추가 !!!---
                   children: [..._buildStarRating(averageRating, size: 20)],
                 ),
                 const SizedBox(height: 4),
@@ -112,13 +109,12 @@ class FacilityReviewScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 20),
-
-          // 2. 오른쪽: 별점별 막대 그래프
           Expanded(
             flex: 3,
             child: Column(
+              // 'ratingPercentages' 변수가 복구되어 이제 에러가 나지 않습니다.
               children: List.generate(5, (index) {
-                final star = 5 - index; // 5, 4, 3, 2, 1 순서
+                final star = 5 - index;
                 final percentage = ratingPercentages[star]!;
                 return _buildRatingBarRow(star, percentage);
               }).toList(),
@@ -129,7 +125,6 @@ class FacilityReviewScreen extends StatelessWidget {
     );
   }
 
-  // 평점 요약 - 막대 그래프 행 헬퍼
   Widget _buildRatingBarRow(int star, int percentage) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
@@ -142,7 +137,7 @@ class FacilityReviewScreen extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
-                value: percentage / 100.0, // 0.0 ~ 1.0
+                value: percentage / 100.0,
                 minHeight: 8,
                 backgroundColor: Colors.grey[300],
                 valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
@@ -159,7 +154,6 @@ class FacilityReviewScreen extends StatelessWidget {
     );
   }
 
-  // ---!!! [신규] 리뷰 카드 UI 위젯 ---!!!
   Widget _buildReviewCard(Map<String, dynamic> review) {
     return Card(
       elevation: 0,
@@ -173,7 +167,6 @@ class FacilityReviewScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. 별점 + 이름 + 날짜
             Row(
               children: [
                 ..._buildStarRating(review['rating'].toDouble(), size: 18),
@@ -191,15 +184,11 @@ class FacilityReviewScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-
-            // 2. 리뷰 텍스트
             Text(
               review['text'],
-              style: const TextStyle(fontSize: 15, height: 1.4), // 줄 간격
+              style: const TextStyle(fontSize: 15, height: 1.4),
             ),
             const SizedBox(height: 16),
-
-            // 3. 도움돼요 / 답글
             Row(
               children: [
                 Icon(Icons.thumb_up_alt_outlined,
@@ -222,8 +211,6 @@ class FacilityReviewScreen extends StatelessWidget {
     );
   }
 
-  // ---!!! [오류 1 수정] 'return Row(..)' -> 'return stars;' !!!---
-  // 별점 생성 헬퍼 (사이즈 조절 가능하게)
   List<Widget> _buildStarRating(double rating, {double size = 20}) {
     List<Widget> stars = [];
     int fullStars = rating.floor();
@@ -238,6 +225,6 @@ class FacilityReviewScreen extends StatelessWidget {
     while (stars.length < 5) {
       stars.add(Icon(Icons.star_border, color: Colors.amber, size: size));
     }
-    return stars; // <-- Row()가 아닌 List<Widget>을 반환합니다.
+    return stars;
   }
 }

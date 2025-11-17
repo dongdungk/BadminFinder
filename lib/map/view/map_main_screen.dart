@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-// ---!!! 1. Google Maps 패키지를 import 합니다 !!!---
+// ⭐️ 1. [수정] go_router 패키지를 import 합니다.
+import 'package:go_router/go_router.dart';
+
+// ---!!! [수정] 님의 PascalCase 파일명에 맞춤 !!!---
+import 'package:victor/map/view/facility_detail_screen.dart';
+import 'package:victor/map/view/search_screen.dart';
+// ---!!! [신규] Google Maps 임포트 !!!---
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-// ---!!! import 경로를 님의 실제 파일명(PascalCase)에 맞게 수정 !!!---
-import 'package:victor/map/view/Facility_Detail_Screen.dart';
-import 'package:victor/map/view/Search_Screen.dart';
-
-// ---!!! [수정] GoogleMap 위젯은 'StatefulWidget'이 필요합니다 !!!---
 class MapMainScreen extends StatefulWidget {
   const MapMainScreen({super.key});
 
@@ -15,30 +16,52 @@ class MapMainScreen extends StatefulWidget {
 }
 
 class _MapMainScreenState extends State<MapMainScreen> {
-
-  // ---!!! [신규] 지도 컨트롤러와 마커 설정 !!!---
   late GoogleMapController mapController;
-
-  // (임시) 서울 시청 위치
-  final LatLng _center = const LatLng(37.5665, 126.9780);
+  final LatLng _center = const LatLng(37.5665, 126.9780); // 서울 시청
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
-  // ---!!! [수정 완료] ---!!!
 
+  // ---!!! [수정] GridView에서 사용할 4개의 시설 (임시 ID 추가) !!!---
+  final List<Map<String, String>> facilities = [
+    {
+      "id": "M_GANGNAM", // (임시 ID)
+      "name": "강남스포츠센터",
+      "location": "강남구",
+      "imageUrl": "assets/AKR20240416124700060_01_i_P4.jpg"
+    },
+    {
+      "id": "M_SEOCHO", // (임시 ID)
+      "name": "서초 배드민턴장",
+      "location": "서초구",
+      "imageUrl": "assets/badminton_img0302.jpg"
+    },
+    {
+      "id": "M_MAPO1", // (임시 ID)
+      "name": "마포구민체육센터",
+      "location": "마포구",
+      "imageUrl": "assets/cts5395_img07.jpg"
+    },
+    {
+      "id": "M_MAPO2", // (임시 ID)
+      "name": "마포실내체육센터",
+      "location": "마포구",
+      "imageUrl": "assets/img_yongwang.jpg"
+    }
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-
-      // 1. 상단 앱 바 (AppBar) - (이전과 동일)
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/search');
+            // ⭐️ 2. [수정] Navigator.pushNamed -> context.push
+            // '/search'는 '/' (홈 탭)의 하위 경로입니다.
+            context.push('/search');
           },
           child: Container(
             color: Colors.transparent,
@@ -57,47 +80,42 @@ class _MapMainScreenState extends State<MapMainScreen> {
           IconButton(
             icon: const Icon(Icons.star_border, color: Colors.black),
             onPressed: () {
-              Navigator.pushNamed(context, '/favorites');
+              // ⭐️ 3. [수정] Navigator.pushNamed -> context.push
+              // '/favorites'는 '/' (홈 탭)의 하위 경로입니다.
+              context.push('/favorites');
             },
           ),
         ],
       ),
-
-      // 2. 메인 컨텐츠 (지도 + 시설 목록)
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ---!!! [핵심 수정] Image.asset 대신 GoogleMap 위젯으로 교체 !!!---
             SizedBox(
-              height: 300, // 지도의 높이
+              height: 300,
               child: GoogleMap(
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(
-                  target: _center, // 초기 카메라 위치 (서울 시청)
+                  target: _center,
                   zoom: 11.0,
                 ),
-                markers: { // ---!!! 마커 세트 !!!---
+                markers: {
                   Marker(
                       markerId: const MarkerId('gangnam_center'),
-                      position: const LatLng(37.4936, 127.0623), // (임의의 위치)
+                      position: const LatLng(37.4936, 127.0623),
                       infoWindow: const InfoWindow(
                         title: '강남스포츠센터',
                         snippet: '탭하여 상세보기',
                       ),
                       onTap: () {
-                        // ---!!! [핵심] 마커 탭하면 시설 소개로 이동 !!!---
-                        Navigator.of(context, rootNavigator: true).push(
-                          MaterialPageRoute(builder: (context) => FacilityDetailScreen()),
-                        );
-                      }
-                  )
-                  // TODO: ViewModel에서 받아온 시설 목록으로 마커를 더 추가
+                        // ⭐️ 4. [수정] Navigator.of(...) -> context.push
+                        // 최상위 경로('/facility/:id')로 이동 (탭 바 덮음)
+                        context.push('/facility/M_GANGNAM');
+                      })
+                  // TODO: ViewModel에서 마커 추가
                 },
               ),
             ),
-            // ---!!! [수정 완료] ---!!!
-
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
               child: Text(
@@ -105,8 +123,6 @@ class _MapMainScreenState extends State<MapMainScreen> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
-
-            // 2x2 격자 GridView (이전과 동일)
             GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               shrinkWrap: true,
@@ -117,35 +133,15 @@ class _MapMainScreenState extends State<MapMainScreen> {
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
               ),
-              itemCount: 4,
+              itemCount: facilities.length, // 4개
               itemBuilder: (context, index) {
-                final List<Map<String, String>> facilities = [
-                  {
-                    "name": "강남스포츠센터",
-                    "location": "강남구",
-                    "imageUrl": "assets/AKR20240416124700060_01_i_P4.jpg"
-                  },
-                  {
-                    "name": "서초 배드민턴장",
-                    "location": "서초구",
-                    "imageUrl": "assets/badminton_img0302.jpg"
-                  },
-                  {
-                    "name": "마포구민체육센터",
-                    "location": "마포구",
-                    "imageUrl": "assets/cts5395_img07.jpg"
-                  },
-                  {
-                    "name": "마포실내체육센터",
-                    "location": "마포구",
-                    "imageUrl": "assets/img_yongwang.jpg"
-                  }
-                ];
+                final facility = facilities[index];
                 return _buildFacilityCard(
                   context,
-                  facilities[index]['name']!,
-                  facilities[index]['location']!,
-                  facilities[index]['imageUrl']!,
+                  facility['id']!, // 1. ID 전달
+                  facility['name']!,
+                  facility['location']!,
+                  facility['imageUrl']!,
                 );
               },
             ),
@@ -156,19 +152,18 @@ class _MapMainScreenState extends State<MapMainScreen> {
     );
   }
 
-  // 카드 헬퍼 (이전과 동일)
-  Widget _buildFacilityCard(
-      BuildContext context, String name, String location, String imageUrl) {
+  // ---!!! [수정] 헬퍼 함수가 'id'도 받도록 수정 !!!---
+  Widget _buildFacilityCard(BuildContext context, String id, String name,
+      String location, String imageUrl) {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.all(0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          // '시설 소개'는 하단 탭이 필요 없으므로 'rootNavigator: true' 유지!
-          Navigator.of(context, rootNavigator: true).push(
-            MaterialPageRoute(builder: (context) => FacilityDetailScreen()),
-          );
+          // ⭐️ 5. [수정] Navigator.of(...) -> context.push
+          // 최상위 경로('/facility/:id')로 이동 (탭 바 덮음)
+          context.push('/facility/$id');
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

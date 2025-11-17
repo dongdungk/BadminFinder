@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart'; // Google Maps 임포트
-// ---!!! import 경로를 님의 실제 파일명(PascalCase)에 맞게 수정 !!!---
-import 'package:victor/map/view/Main_Screen.dart'; // mainNavigatorKey 임포트
+// ⭐️ 1. [수정] go_router 패키지를 import 합니다.
+import 'package:go_router/go_router.dart';
+// ⭐️ 2. [삭제] main_screen.dart의 GlobalKey 임포트가 더 이상 필요 없습니다.
+// import 'package:victor/map/view/main_screen.dart'; // (삭제)
 
 class TaggingMainScreen extends StatefulWidget {
-  // ---!!! [핵심] 이 페이지는 자신만의 Scaffold를 가집니다 !!!---
   const TaggingMainScreen({super.key});
 
   @override
@@ -12,7 +13,6 @@ class TaggingMainScreen extends StatefulWidget {
 }
 
 class _TaggingMainScreenState extends State<TaggingMainScreen> {
-  // ---!!! [신규] '충족조건O' / '충족조건X' 상태를 관리하는 변수 !!!---
   bool _isConditionMet = false; // false = 충족조건X, true = 충족조건O
 
   // --- 지도 관련 변수 ---
@@ -23,11 +23,10 @@ class _TaggingMainScreenState extends State<TaggingMainScreen> {
   @override
   void initState() {
     super.initState();
-    // (임시) '내 위치' 마커
     _markers.add(
       Marker(
         markerId: const MarkerId('myLocation'),
-        position: _center, // (임시) '내 위치'도 센터와 동일하게 설정
+        position: _center,
         infoWindow: const InfoWindow(title: '내 위치'),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
       ),
@@ -41,12 +40,19 @@ class _TaggingMainScreenState extends State<TaggingMainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ---!!! [수정] 하단 탭이 가려지는 문제 해결 !!!---
       resizeToAvoidBottomInset: false,
 
       // 1. 상단 앱 바 (AppBar)
       appBar: AppBar(
-        // '뒤로가기' 버튼이 자동으로 생성됩니다. (중첩 네비게이터)
+        // go_router 셸 라우트에서는 뒤로가기 버튼이 자동으로 생기지 않을 수 있습니다.
+        // ⭐️ 3. [개선] 뒤로가기 버튼(또는 닫기 버튼)을 명시적으로 추가합니다.
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // '/edit' 탭의 첫 화면으로 돌아갑니다.
+            context.go('/edit');
+          },
+        ),
         title: const Text('서초구민체육센터'), // (임시)
         actions: [
           IconButton(
@@ -58,7 +64,10 @@ class _TaggingMainScreenState extends State<TaggingMainScreen> {
           IconButton(
             icon: const Icon(Icons.close),
             onPressed: () {
-              Navigator.pop(context); // '뒤로가기'와 동일
+              // ⭐️ 4. [수정] Navigator.pop -> context.go
+              // 현재 탭('/edit')의 루트('/')로 이동합니다.
+              // 만약 '/edit' 탭에서만 뒤로 가고 싶다면 context.pop()을 쓸 수 있습니다.
+              context.go('/'); // '홈' 탭으로 이동 (혹은 context.go('/edit');)
             },
           ),
         ],
@@ -67,7 +76,7 @@ class _TaggingMainScreenState extends State<TaggingMainScreen> {
       // 2. 메인 컨텐츠 (지도 + 하단 시트)
       body: Stack(
         children: [
-          // 2-1. Google 지도
+          // 2-1. Google 지도 (이하 동일)
           GoogleMap(
             onMapCreated: _onMapCreated,
             initialCameraPosition: CameraPosition(
@@ -75,10 +84,11 @@ class _TaggingMainScreenState extends State<TaggingMainScreen> {
               zoom: 16.0,
             ),
             markers: _markers,
-            myLocationButtonEnabled: false, // '내 위치' 버튼 (오른쪽 위)
-            myLocationEnabled: true, // 파란색 '내 위치' 점 표시
+            myLocationButtonEnabled: false,
+            myLocationEnabled: true,
           ),
 
+          // ... (Positioned, Chip, 하단 시트 등 모든 UI 코드는 동일) ...
           // 2-2. 지도 위 오버레이 버튼들 (내 위치, 즐겨찾기 등)
           Positioned(
             top: 16,
@@ -177,12 +187,10 @@ class _TaggingMainScreenState extends State<TaggingMainScreen> {
           ),
         ],
       ),
-      // ---!!! [핵심] 하단 탭 바는 이 파일에 없습니다 !!!---
-      // (부모인 Main_Screen.dart가 가지고 있습니다)
     );
   }
 
-  // ---!!! [신규] '충족조건X' (image_73e91f.jpg) 하단 시트 UI ---!!!
+  // ---!!! '충족조건X' UI (수정 없음) ---!!!
   Widget _buildConditionNotMetContent(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +248,7 @@ class _TaggingMainScreenState extends State<TaggingMainScreen> {
     );
   }
 
-  // ---!!! [신규] '충족조건O' (image_73e959.jpg) 하단 시트 UI ---!!!
+  // ---!!! '충족조건O' UI (onPressed 수정) ---!!!
   Widget _buildConditionMetContent(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,9 +287,10 @@ class _TaggingMainScreenState extends State<TaggingMainScreen> {
             minimumSize: const Size(double.infinity, 50),
           ),
           onPressed: () {
-            // ---!!! [핵심] '태그 성공' 화면으로 이동 !!!---
-            // (하단 탭이 계속 보여야 하므로, rootNavigator: false)
-            Navigator.pushNamed(context, '/tagging_success');
+            // ⭐️ 5. [수정] Navigator.pushNamed -> context.push
+            // '/edit' 탭의 하위 경로인 'tagging_success'로 이동합니다.
+            // ('/edit/tagging_success')
+            context.push('/edit/tagging_success');
           },
           child: const Text('Check In'),
         ),

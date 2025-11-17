@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+// ⭐️ 1. [수정] go_router 패키지를 import 합니다.
+import 'package:go_router/go_router.dart';
 
 class TaggingSuccessScreen extends StatelessWidget {
-  // ---!!! [핵심] 이 페이지는 자신만의 Scaffold를 가집니다 !!!---
   const TaggingSuccessScreen({super.key});
 
   @override
@@ -48,9 +49,10 @@ class TaggingSuccessScreen extends StatelessWidget {
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 onPressed: () {
-                  // ---!!! [핵심] '입출입' 탭의 첫 화면('/')으로 돌아감 !!!---
-                  // (popUntil을 사용하여 스택의 '/tagging_success'를 제거)
-                  Navigator.popUntil(context, (route) => route.isFirst);
+                  // ⭐️ 2. [수정] Navigator.popUntil -> context.go
+                  // '/edit' 탭의 루트(첫 화면)로 이동합니다.
+                  // '/tagging_success' 화면은 스택에서 자동으로 제거됩니다.
+                  context.go('/edit');
                 },
                 child: const Text('확인', style: TextStyle(fontSize: 18)),
               ),
@@ -59,8 +61,6 @@ class TaggingSuccessScreen extends StatelessWidget {
           ),
         ),
       ),
-      // ---!!! [핵심] 하단 탭 바는 이 파일에 없습니다 !!!---
-      // (부모인 Main_Screen.dart가 가지고 있습니다)
     );
   }
 }

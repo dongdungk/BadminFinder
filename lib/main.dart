@@ -1,9 +1,38 @@
+// lib/main.dart
+
 import 'package:flutter/material.dart';
-// ---!!! import 경로를 님의 실제 파일명(PascalCase)에 맞게 수정 !!!---
-import 'package:victor/map/view/Main_Screen.dart';
+import 'package:provider/provider.dart';
+import 'package:victor/router.dart';
+
+// ⭐️ 1. ViewModel들을 임포트합니다 (이전과 동일)
+import 'package:victor/map/viewmodel/search_viewmodel.dart';
+import 'package:victor/map/viewmodel/facility_detail_viewmodel.dart';
+
+// ⭐️ 2. ViewModel이 필요로 하는 "Service"를 임포트합니다.
+import 'package:victor/map/service/facility_service.dart';
 
 void main() {
-  runApp(const MyApp());
+  // ⭐️ 3. 두 ViewModel이 함께 사용할 FacilityService 객체를 *하나만* 생성합니다.
+  final FacilityService facilityService = FacilityService();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        // ⭐️ 4. SearchViewModel을 생성할 때, 위에서 만든 service를 전달합니다.
+        ChangeNotifierProvider(
+          create: (_) => SearchViewModel(facilityService),
+        ),
+
+        // ⭐️ 5. FacilityDetailViewModel을 생성할 때도 *똑같은* service를 전달합니다.
+        ChangeNotifierProvider(
+          create: (_) => FacilityDetailViewModel(facilityService),
+        ),
+
+        // (나중에 다른 ViewModel이 생기면 여기에 추가...)
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -11,23 +40,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'BadimFinder', // 님의 Repository 이름으로 변경
-      theme: ThemeData(
-        // ---!!! [수정] AppBar/Scaffold 기본 배경색 흰색으로 설정 !!!---
-        // (피그마 시안과 일치시킴)
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black, // 아이콘 등 전경색
-          elevation: 1.0, // 그림자
-        ),
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      // ---!!! [핵심] 앱의 첫 화면은 '뼈대'인 MainScreen 입니다 !!!---
-      home: const MainScreen(),
-      debugShowCheckedModeBanner: false,
+    return MaterialApp.router(
+      routerConfig: goRouter,
+      title: 'Victor App',
+      // (기타 테마 설정...)
     );
   }
 }

@@ -1,8 +1,15 @@
+// ⭐️ 1. [수정 완료] 'package://' 오타를 'package:'로 수정
 import 'package:flutter/material.dart';
 
-// ---!!! [수정] StatefulWidget으로 변경 (필터 칩 상태 관리를 위해) !!!---
 class FacilityPhotoScreen extends StatefulWidget {
-  const FacilityPhotoScreen({super.key});
+  // facilityId를 받기 위한 변수 추가
+  final String facilityId;
+
+  // 생성자 수정 (facilityId 추가)
+  const FacilityPhotoScreen({
+    super.key,
+    required this.facilityId,
+  });
 
   @override
   State<FacilityPhotoScreen> createState() => _FacilityPhotoScreenState();
@@ -25,8 +32,6 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> {
     "assets/AKR20240416124700060_01_i_P4.jpg",
     "assets/cts5395_img07.jpg",
     "assets/img_yongwang.jpg"
-
-    // (assets 폴더에 사진이 더 있다면 여기에 추가하세요)
   ];
 
   final List<String> filterChips = [
@@ -39,11 +44,9 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ---!!! [수정] Scaffold와 AppBar 추가 !!!---
     return Scaffold(
-      // 1. 님이 요청하신 AppBar (시설 이름 + 즐겨찾기)
       appBar: AppBar(
-        title: const Text('서초구민체육센터'), // (임시) 시설 이름
+        title: Text('사진 (ID: ${widget.facilityId})'), // (임시) 시설 이름
         actions: [
           IconButton(
             icon: const Icon(Icons.star_border), // 즐겨찾기 전
@@ -53,31 +56,23 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> {
           ),
         ],
       ),
-      // ---!!! [수정] ListView로 변경하여 전체 스크롤 !!!---
       body: ListView(
         children: [
-          // 2. 님이 요청하신 '사진 256장' 배너
           _buildUploadBanner(),
-
-          // 3. 님이 요청하신 필터 칩
           _buildFilterChips(),
-
-          // 4. 사진 그리드
           GridView.builder(
             padding: const EdgeInsets.all(8.0),
-            shrinkWrap: true, // ListView 안에서 스크롤 충돌 방지
-            physics: const NeverScrollableScrollPhysics(), // ListView가 스크롤
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, // 한 줄에 3개
+              crossAxisCount: 3,
               crossAxisSpacing: 8.0,
               mainAxisSpacing: 8.0,
             ),
-            // ---!!! [수정] 님의 assets 이미지 개수만큼 !!!---
             itemCount: photoAssets.length,
             itemBuilder: (context, index) {
               return ClipRRect(
-                borderRadius: BorderRadius.circular(8.0), // 이미지 모서리 둥글게
-                // ---!!! [수정] Image.asset() 사용 !!!---
+                borderRadius: BorderRadius.circular(8.0),
                 child: Image.asset(
                   photoAssets[index],
                   fit: BoxFit.cover,
@@ -92,22 +87,19 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> {
               );
             },
           ),
-
-          // 5. 님이 요청하신 '사진 더보기' 버튼
           _buildShowMoreButton(),
         ],
       ),
     );
   }
 
-  // ---!!! [신규] '사진 256장' 배너 헬퍼 ---!!!
   Widget _buildUploadBanner() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         decoration: BoxDecoration(
-          color: Colors.blue.withOpacity(0.05), // 옅은 파란색 배경
+          color: Colors.blue.withOpacity(0.05),
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Row(
@@ -131,6 +123,7 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
+                // ⭐️ 2. [수정 완료] Rorde -> Border 오타 수정
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -143,10 +136,9 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> {
     );
   }
 
-  // ---!!! [신규] 필터 칩 헬퍼 ---!!!
   Widget _buildFilterChips() {
     return SizedBox(
-      height: 60.0, // 칩 리스트의 높이
+      height: 60.0,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -163,7 +155,7 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> {
                   // TODO: ViewModel을 통해 필터링 로직 수행
                 });
               },
-              selectedColor: Colors.blue, // 선택됐을 때 색상
+              selectedColor: Colors.blue,
               labelStyle: TextStyle(
                 color: _selectedChipIndex == index ? Colors.white : Colors.black,
               ),
@@ -183,7 +175,6 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> {
     );
   }
 
-  // ---!!! [신규] '사진 더보기' 버튼 헬퍼 ---!!!
   Widget _buildShowMoreButton() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -192,7 +183,7 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> {
           // TODO: 사진 더보기 (페이지네이션)
         },
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(double.infinity, 50), // 버튼 높이 50
+          minimumSize: const Size(double.infinity, 50),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
