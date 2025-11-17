@@ -13,11 +13,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Status',
-      //home: const SearchGymPage(),
-      //home: const FacilitiesStatusPage(),
-      //home: const GymCompareStatPage(),
-      //home: const LocalStatus()
-      // home: const StatusMain(),
       home: StatusTabbar(),
     );
 
