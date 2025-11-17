@@ -1,12 +1,12 @@
 // lib/router.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:victor/map/view/main_screen.dart'; // 4단계에서 수정할 MainScreen
-import 'package:victor/map/view/map_main_screen.dart';
-import 'package:victor/map/view/favorite_screen.dart';
-import 'package:victor/map/view/search_screen.dart';
-import 'package:victor/tagging/view/tagging_main_screen.dart';
-import 'package:victor/tagging/view/tagging_success_screen.dart';
+import 'map/view/main_screen.dart'; // 4단계에서 수정할 MainScreen
+import 'map/view/map_main_screen.dart';
+import '/map/view/favorite_screen.dart';
+import '/map/view/search_screen.dart';
+import '/tagging/view/tagging_main_screen.dart';
+import '/tagging/view/tagging_success_screen.dart';
 
 // 1. 앱의 최상위 네비게이터 키
 final _rootNavigatorKey = GlobalKey<NavigatorState>();

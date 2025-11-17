@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 // ---!!! [수정] 님의 PascalCase 파일명에 맞춤 !!!---
-import 'package:victor/map/view/facility_detail_screen.dart';
+import '/map/view/facility_detail_screen.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});

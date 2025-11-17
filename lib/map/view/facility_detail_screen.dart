@@ -4,10 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 // (이하 import는 동일)
-import 'package:victor/map/view/facility_photo_screen.dart';
-import 'package:victor/map/view/facility_review_screen.dart';
-import 'package:victor/map/model/facility_model.dart';
-import 'package:victor/map/viewmodel/facility_detail_viewmodel.dart';
+import '/map/view/facility_photo_screen.dart';
+import '/map/view/facility_review_screen.dart';
+import '/map/model/facility_model.dart';
+import '/map/viewmodel/facility_detail_viewmodel.dart';
 
 class FacilityDetailScreen extends StatefulWidget {
   final String facilityId;

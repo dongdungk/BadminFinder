@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:victor/map/model/facility_model.dart'; // Model 임포트
-import 'package:victor/map/service/facility_service.dart'; // Service 임포트
+import '/map/model/facility_model.dart'; // Model 임포트
+import '/map/service/facility_service.dart'; // Service 임포트
 
 // "시설 상세 화면"의 '뇌'
 class FacilityDetailViewModel extends ChangeNotifier {
