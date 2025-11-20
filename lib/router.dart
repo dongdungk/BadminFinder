@@ -1,6 +1,18 @@
 // lib/router.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:seokju/community/view/survey/survey_complete_page.dart';
+import 'package:seokju/community/view/survey/survey_result_page.dart';
+import 'package:seokju/community/view/survey/survey_vote_page.dart';
+import 'community/model/competition/competition_model.dart';
+import 'community/view/competition/competition_details_page.dart';
+import 'community/view/competition/competition_page.dart';
+import 'community/view/freeboard/freeboard_page.dart';
+import 'community/view/freeboard/freeboard_post_page.dart';
+import 'community/view/freeboard/freeboard_writing_page.dart';
+import 'community/view/news/news_page.dart';
+import 'community/view/news/news_see_more_page.dart';
+import 'community/view/survey/survey_page.dart';
 import 'map/view/main_screen.dart'; // 4단계에서 수정할 MainScreen
 import 'map/view/map_main_screen.dart';
 import '/map/view/favorite_screen.dart';
@@ -88,7 +100,76 @@ final goRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/community',
-              builder: (context, state) => const Center(child: Text('커뮤니티 화면')),
+              builder: (context, state) => const FreeBoardPage(),
+              routes: [
+                // 자유게시판 목록
+                GoRoute(
+                  path: 'freeboard',
+                  builder: (context, state) => const FreeBoardPage(),
+                ),
+
+                // 게시글 상세페이지 (ID 없음)
+                GoRoute(
+                  path: 'freeboard/post',
+                  builder: (context, state) => const FreeBoardPostPage(),
+                ),
+
+                // 글작성
+                GoRoute(
+                  path: 'freeboard/write',
+                  builder: (context, state) => const FreeBoarCommentPage(),
+                ),
+
+                // 대회
+                GoRoute(
+                  path: 'competition',
+                  builder: (context, state) => const CompetitionPage(),
+                ),
+                GoRoute(
+                  path: 'competition/details',
+                  builder: (context, state) {
+                    final comp = state.extra as CompetitionModel;
+                    return CompetitionDetailPage(comp: comp);
+                  },
+                ),
+
+
+                // 뉴스
+                GoRoute(
+                  path: 'news',
+                  builder: (context, state) => const NewsPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'seemore',
+                      builder: (context, state) {
+                        final article = state.extra as Map<String, dynamic>;
+                        return NewsSeeMorePage(article: article);
+                      },
+                    ),
+                  ],
+                ),
+
+                // 설문
+                GoRoute(
+                  path: 'survey',
+                  builder: (context, state) => const SurveyPage(),
+                ),
+                // 설문 투표 중
+                GoRoute(
+                  path: 'survey/vote',
+                  builder: (context, state) => SurveyVotePage(),
+                ),
+                // 설문 투표 완료
+                GoRoute(
+                  path: 'survey/complete',
+                  builder: (context, state) => SurveyCompletePage(),
+                ),
+                // 설문 투표 결과
+                GoRoute(
+                  path: 'survey/result',
+                  builder: (context, state) => SurveyResultPage(),
+                ),
+              ],
             ),
           ],
         ),
