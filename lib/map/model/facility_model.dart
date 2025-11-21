@@ -1,12 +1,13 @@
-// "붕어빵 틀" (데이터 설계도)
+// lib/map/model/facility_model.dart
+
 class FacilityModel {
-  final String id; // (API에 ID가 없어서 '상호+주소'로 임의 생성)
+  final String id;
   final String name;
   final String address;
   final String phone;
-  final String category; // (API의 '업종'에 해당)
+  final String category;
 
-  // (이하 정보는 '동작구 API'에 없으므로, 기본값/계산이 필요합니다)
+  // UI에서 사용되는 임시 필드
   final String distance;
   final String hours;
   final String price;
@@ -16,9 +17,10 @@ class FacilityModel {
   final int reviewCount;
   final List<String> images;
 
-  // ⭐️ 1. [수정] 피드백 반영을 위한 필드 2개 추가
-  final int currentOccupancy; // 현재 인원
-  final int maxCapacity; // 최대 정원
+  // 필터링 및 현황판용 필드
+  final int currentOccupancy;
+  final int maxCapacity;
+  final String district; // AR_CD_NAME (자치구명)
 
   FacilityModel({
     required this.id,
@@ -27,46 +29,76 @@ class FacilityModel {
     required this.phone,
     required this.category,
 
-    // (기본값)
     this.distance = 'N/A',
     this.hours = '정보 없음',
-    this.price = '정보 없음',
+    this.price = '무료',
     this.reservation = '문의 필요',
     this.status = '정보 없음',
-    this.rating = 0.0,
-    this.reviewCount = 0,
-    // ⭐️ 2. [수정] images의 기본값을 비어있는 리스트로 변경
+    this.rating = 4.2,
+    this.reviewCount = 8,
     this.images = const [],
-    // ⭐️ 3. [수정] 새로 추가된 필드의 기본값 설정
-    this.currentOccupancy = 0, // 기본값 0명
-    this.maxCapacity = 0, // 기본값 0명
+    this.currentOccupancy = 0,
+    this.maxCapacity = 0,
+    required this.district, // district는 이제 필수
   });
 
-  // ---!!! [핵심] 님이 찾으신 "진짜 JSON 이름표"로 Model을 변환하는 공장 !!!---
-  // (API 4개가 모두 이 '이름표'를 쓴다고 가정합니다)
   factory FacilityModel.fromJson(Map<String, dynamic> json) {
+    // 1. 이름
+    String name = json['ft_title'] as String? ??
+        json['FT_TITLE'] as String? ??
+        '이름 없음';
 
-    // API에서 받은 '상호'와 '시설주소' (null일 수 있으므로 ?? '...' 처리)
-    String name = json['상호'] as String? ?? '이름 없음';
-    String address = json['시설주소'] as String? ?? '주소 정보 없음';
+    // 2. 주소
+    String address = json['ft_addr'] as String? ??
+        json['FT_ADDR'] as String? ??
+        '주소 정보 없음';
+
+    // 3. 전화번호
+    String phone = json['ft_phone'] as String? ??
+        json['FT_PHONE'] as String? ??
+        json['TELNO'] as String? ??
+        '전화번호 없음';
+
+    // 4. 카테고리
+    String category = json['ft_kind_name'] as String? ??
+        json['FT_KIND_NAME'] as String? ??
+        '기타';
+
+    // ⭐️ 5. 자치구 (AR_CD_NAME) - 공백 및 특수문자 완벽 제거 후 저장
+    String rawDistrict = json['ar_cd_name'] as String? ?? json['AR_CD_NAME'] as String? ?? '';
+    String district = rawDistrict.replaceAll(RegExp(r'\s+'), '').trim();
+
+    // 6. 운영시간
+    String wdTime = json['ft_wd_time'] as String? ?? json['FT_WD_TIME'] as String? ?? '';
+    String weTime = json['ft_we_time'] as String? ?? json['FT_WE_TIME'] as String? ?? '';
+    String hoursInfo = (wdTime.isEmpty && weTime.isEmpty) ? '정보 없음' : '평일: $wdTime 주말: $weTime';
+
+    // 7. 가격, 상태 등
+    String priceInfo = json['ft_money'] as String? ?? json['FT_MONEY'] as String? ?? '요금 정보 없음';
+    String opStatus = json['ft_operation_name'] as String? ??
+        json['FT_OPERATION_NAME'] as String? ??
+        '정보 없음';
+
+    // 8. 이미지
+    List<String> imageList = [];
+    if (json['IMGURL'] != null && json['IMGURL'].toString().isNotEmpty) {
+      imageList.add(json['IMGURL'].toString());
+    }
 
     return FacilityModel(
-      // 1. '동작구 API'는 '시설 ID'가 없으므로, "상호+주소"를 조합해 고유 ID를 만듭니다.
-      id: '$name-$address',
-
-      // 2. 님이 찾으신 "JSON 이름표" (한글)를 정확히 입력합니다.
+      id: name,
       name: name,
       address: address,
-      phone: json['시설전화번호'] as String? ?? '전화번호 없음',
-      category: json['업종'] as String? ?? '업종 정보 없음',
+      phone: phone,
+      category: category,
+      hours: hoursInfo,
+      price: priceInfo,
+      status: opStatus,
+      reservation: opStatus,
+      district: district, // 클리닝된 자치구명
+      images: imageList,
 
-      // 3. (참고) 님이 찾은 '동작구 API'는 평점, 운영시간, 가격 등의 정보가
-      //    '없습니다'. 따라서 이 값들은 '기본값'으로 들어가게 됩니다.
-
-      // ⭐️ 4. [수정] 만약 API JSON에 이 필드들이 있다면 여기서 파싱합니다.
-      //    (지금은 없으므로, 위 3번의 기본값(0)이 사용됩니다.)
-      // currentOccupancy: json['현재인원'] as int? ?? 0,
-      // maxCapacity: json['정원'] as int? ?? 0,
+      // (나머지 임시값은 기본값 사용)
     );
   }
 }

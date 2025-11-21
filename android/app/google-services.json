@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1004223604376",
+    "project_id": "badminfinder-84d4d",
+    "storage_bucket": "badminfinder-84d4d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004223604376:android:6956483b8e30e3960092ed",
+        "android_client_info": {
+          "package_name": "com.teamtrow.victor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCghhLXhTBF4ecroZinsU5JXIBy81updLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
