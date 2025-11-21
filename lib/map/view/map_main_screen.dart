@@ -1,10 +1,14 @@
+// lib/map/view/map_main_screen.dart
+
+// lib/map/view/map_main_screen.dart
+
 import 'package:flutter/material.dart';
-// ⭐️ 1. [수정] go_router 패키지를 import 합니다.
 import 'package:go_router/go_router.dart';
-
-
-// ---!!! [신규] Google Maps 임포트 !!!---
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+// ⭐️ [수정] LoginViewModel 경로: lib/map/view/ 에서 '../../login/viewmodel/'로 이동
+import '../../login/viewmodel/login_viewmodel.dart';
+
 
 class MapMainScreen extends StatefulWidget {
   const MapMainScreen({super.key});
@@ -21,30 +25,30 @@ class _MapMainScreenState extends State<MapMainScreen> {
     mapController = controller;
   }
 
-  // ---!!! [수정] GridView에서 사용할 4개의 시설 (임시 ID 추가) !!!---
+  // ---!!! [최종] GridView에서 사용할 API 일치 시설 목록 !!!---
   final List<Map<String, String>> facilities = [
     {
-      "id": "M_GANGNAM", // (임시 ID)
-      "name": "강남스포츠센터",
-      "location": "강남구",
+      "id": "월곡배드민턴장", // 👈 API 시설명
+      "name": "월곡배드민턴장",
+      "location": "성북구",
       "imageUrl": "assets/AKR20240416124700060_01_i_P4.jpg"
     },
     {
-      "id": "M_SEOCHO", // (임시 ID)
-      "name": "서초 배드민턴장",
-      "location": "서초구",
+      "id": "매봉산실내배드민턴장", // 👈 API 시설명
+      "name": "매봉산실내배드민턴장",
+      "location": "강남구",
       "imageUrl": "assets/badminton_img0302.jpg"
     },
     {
-      "id": "M_MAPO1", // (임시 ID)
-      "name": "마포구민체육센터",
-      "location": "마포구",
+      "id": "마곡레포츠센터 실내배드민턴장", // 👈 API 시설명
+      "name": "마곡레포츠센터 실내배드민턴장",
+      "location": "강서구",
       "imageUrl": "assets/cts5395_img07.jpg"
     },
     {
-      "id": "M_MAPO2", // (임시 ID)
-      "name": "마포실내체육센터",
-      "location": "마포구",
+      "id": "금화배드민턴장", // 👈 API 시설명
+      "name": "금화배드민턴장",
+      "location": "서대문구",
       "imageUrl": "assets/img_yongwang.jpg"
     }
   ];
@@ -57,8 +61,6 @@ class _MapMainScreenState extends State<MapMainScreen> {
         automaticallyImplyLeading: false,
         title: GestureDetector(
           onTap: () {
-            // ⭐️ 2. [수정] Navigator.pushNamed -> context.push
-            // '/search'는 '/' (홈 탭)의 하위 경로입니다.
             context.push('/search');
           },
           child: Container(
@@ -75,11 +77,18 @@ class _MapMainScreenState extends State<MapMainScreen> {
           ),
         ),
         actions: [
+          // ⭐️ [로그아웃 버튼]
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: () async {
+              await context.read<LoginViewModel>().signOut();
+              if (!context.mounted) return; // 위젯이 마운트된 상태인지 확인
+              context.go('/login');
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.star_border, color: Colors.black),
             onPressed: () {
-              // ⭐️ 3. [수정] Navigator.pushNamed -> context.push
-              // '/favorites'는 '/' (홈 탭)의 하위 경로입니다.
               context.push('/favorites');
             },
           ),
@@ -106,11 +115,8 @@ class _MapMainScreenState extends State<MapMainScreen> {
                         snippet: '탭하여 상세보기',
                       ),
                       onTap: () {
-                        // ⭐️ 4. [수정] Navigator.of(...) -> context.push
-                        // 최상위 경로('/facility/:id')로 이동 (탭 바 덮음)
-                        context.push('/facility/M_GANGNAM');
+                        context.push('/facility/강남스포츠센터');
                       })
-                  // TODO: ViewModel에서 마커 추가
                 },
               ),
             ),
@@ -131,12 +137,12 @@ class _MapMainScreenState extends State<MapMainScreen> {
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
               ),
-              itemCount: facilities.length, // 4개
+              itemCount: facilities.length,
               itemBuilder: (context, index) {
                 final facility = facilities[index];
                 return _buildFacilityCard(
                   context,
-                  facility['id']!, // 1. ID 전달
+                  facility['id']!, // API 시설명 (예: 월곡배드민턴장)
                   facility['name']!,
                   facility['location']!,
                   facility['imageUrl']!,
@@ -150,7 +156,6 @@ class _MapMainScreenState extends State<MapMainScreen> {
     );
   }
 
-  // ---!!! [수정] 헬퍼 함수가 'id'도 받도록 수정 !!!---
   Widget _buildFacilityCard(BuildContext context, String id, String name,
       String location, String imageUrl) {
     return Card(
@@ -159,8 +164,7 @@ class _MapMainScreenState extends State<MapMainScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          // ⭐️ 5. [수정] Navigator.of(...) -> context.push
-          // 최상위 경로('/facility/:id')로 이동 (탭 바 덮음)
+          // ID(시설명)을 상세 페이지로 전달
           context.push('/facility/$id');
         },
         child: Column(

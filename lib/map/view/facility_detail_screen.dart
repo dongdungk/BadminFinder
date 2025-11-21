@@ -81,8 +81,8 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
             indicatorColor: Colors.black,
             tabs: [
               _buildTab('정보'),
-              _buildTab('리뷰 (${facility.reviewCount})'),
-              _buildTab('사진 (${facility.images.length})'),
+              _buildTab('리뷰'),
+              _buildTab('사진'),
             ],
             onTap: (index) {
               if (index == 1) {
