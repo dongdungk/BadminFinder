@@ -1,10 +1,20 @@
+// lib/map/view/search_screen.dart
+
+// lib/map/view/search_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// ⭐️ 1. [수정] go_router 패키지를 import 합니다.
 import 'package:go_router/go_router.dart';
 
-import '/map/model/facility_model.dart';
-import '/map/viewmodel/search_viewmodel.dart';
+// ⭐️ [수정 1] LoginViewModel 경로: lib/map/view/ 에서 '../../login/viewmodel/'로 이동
+import '../../login/viewmodel/login_viewmodel.dart';
+// ⭐️ [수정 2] FacilityModel 경로: lib/map/view/ 에서 '../model/'로 이동
+import '../model/facility_model.dart';
+// ⭐️ [수정 3] SearchViewModel 경로: lib/map/view/ 에서 '../viewmodel/'로 이동
+import '../viewmodel/search_viewmodel.dart';
+
+// ... (나머지 코드는 그대로)
+
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -22,12 +32,12 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
 
-      // 1. 상단 앱 바 (AppBar)
       appBar: AppBar(
         title: TextField(
           autofocus: true,
           decoration: InputDecoration(
-            hintText: '시설 검색 (예: 광진, 송파, 성북, 동작)',
+            // ⭐️ [수정] 영어 검색만 유도
+            hintText: '시설 검색 (예: songpa, guro, gangnam)',
             hintStyle: TextStyle(color: Colors.grey[400]),
             border: InputBorder.none,
           ),
@@ -36,21 +46,25 @@ class _SearchScreenState extends State<SearchScreen> {
           },
         ),
         actions: [
+          // ⭐️ [로그아웃 버튼]
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: () async {
+              await context.read<LoginViewModel>().signOut();
+              if (!context.mounted) return; // 위젯이 마운트된 상태인지 확인
+              context.go('/login');
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.star_border, color: Colors.black),
             onPressed: () {
-              // ⭐️ 2. [수정] Navigator.pushNamed -> context.push
-              // '/favorites' 경로는 '홈' 탭의 하위 경로이므로
-              // 탭 바가 유지된 채로 화면이 전환됩니다. (정상)
               context.push('/favorites');
             },
           ),
         ],
       ),
 
-      // 2. 메인 컨텐츠
       body: Column(
-        // ... (이하 Column 내용은 동일) ...
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
@@ -60,20 +74,24 @@ class _SearchScreenState extends State<SearchScreen> {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ),
+
           Expanded(
             child: Consumer<SearchViewModel>(
               builder: (context, viewModel, child) {
+
                 if (viewModel.isLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
+
                 if (viewModel.facilities.isEmpty) {
                   return const Center(
                     child: Text(
-                      '검색 결과가 없습니다. (예: 광진, 송파)',
+                      '검색 결과가 없습니다. (예: songpa, guro)',
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   );
                 }
+
                 return ListView.builder(
                   itemCount: viewModel.facilities.length,
                   itemBuilder: (context, index) {
@@ -92,18 +110,17 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildFacilityResultCard(
       BuildContext context, FacilityModel facility) {
 
-    // ... (이하 색상 로직은 동일) ...
     Color statusColor;
     switch (facility.status) {
-      case '운영중': statusColor = Colors.green; break;
-      case '휴무': statusColor = Colors.orange; break;
+      case '운영': statusColor = Colors.green; break;
+      case '휴관': statusColor = Colors.orange; break;
       default: statusColor = Colors.red;
     }
+
     Color reservationColor;
-    // ... (이하 동일) ...
     switch (facility.reservation) {
-      case '예약 가능': reservationColor = Colors.blue; break;
-      case '예약 불가': reservationColor = Colors.grey; break;
+      case '가능': reservationColor = Colors.blue; break;
+      case '불가능': reservationColor = Colors.grey; break;
       default: reservationColor = Colors.purple;
     }
 
@@ -112,18 +129,15 @@ class _SearchScreenState extends State<SearchScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: InkWell(
         onTap: () {
-          // ⭐️ 3. [수정] Navigator.of(context, rootNavigator: true).push(...)
-          //    -> context.push(...)
-          // 1단계에서 정의한 최상위 경로('/facility/:id')로 이동합니다.
-          // 이 경로는 셸 바깥에 있으므로 하단 탭 바를 덮고 나옵니다.
+          // ID(시설명)을 상세 화면으로 전달
           context.push('/facility/${facility.id}');
         },
         child: Padding(
-          // ... (이하 카드 내부는 모두 동일) ...
           padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // 1. 이름 / 거리
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -137,12 +151,14 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    facility.distance,
+                    facility.distance, // 👈 Mock Data (e.g., 2.5km)
                     style: const TextStyle(fontSize: 15, color: Colors.blue),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
+
+              // 2. 주소
               Text(
                 facility.address,
                 style: const TextStyle(fontSize: 14, color: Colors.black54),
@@ -150,6 +166,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 12),
+
+              // 3. 운영시간 / 전화번호
               Row(
                 children: [
                   const Icon(Icons.access_time, size: 16, color: Colors.grey),
@@ -162,7 +180,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 children: [
                   const Icon(Icons.payment, size: 16, color: Colors.grey),
                   const SizedBox(width: 4),
-                  Text(facility.price, style: const TextStyle(fontSize: 14)),
+                  Text(facility.price, style: const TextStyle(fontSize: 14)), // 👈 Mock Data (e.g., 무료)
                   const SizedBox(width: 12),
                   const Icon(Icons.call_outlined, size: 16, color: Colors.grey),
                   const SizedBox(width: 4),
@@ -170,6 +188,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 ],
               ),
               const SizedBox(height: 8),
+
+              // 4. 예약 가능 / 운영 상태 (칩)
               Row(
                 children: [
                   Chip(
