@@ -32,7 +32,7 @@ class LocalStatusPage extends StatelessWidget {
                 ),
                 child: DropdownButton(
                   underline: Container(height: 0,),
-                  icon: Image(image: AssetImage('assets/icons/downArrow.png')),
+                  icon: Image(image: AssetImage('assets/static/icons/downArrow.png')),
                     items: _localList.map((String item) => DropdownMenuItem<String>(
                       value: item, child: Text(item),
                     ),
