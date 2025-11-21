@@ -11,9 +11,20 @@ import '/map/viewmodel/facility_detail_viewmodel.dart';
 // ⭐️ 2. ViewModel이 필요로 하는 "Service"를 임포트합니다.
 import '/map/service/facility_service.dart';
 
+//커뮤니티 provider import
+import 'community/service/competition/competition_api_service.dart';
+import 'community/view_model/competition/competition_view_model.dart';
+import 'community/view_model/freeboard/freeboard_view_model.dart';
+import 'community/view_model/freeboard/writing_view_model.dart';
+import 'community/view_model/news/news_view_model.dart';
+import 'community/view_model/survey/survey_view_model.dart';
+
 void main() {
   // ⭐️ 3. 두 ViewModel이 함께 사용할 FacilityService 객체를 *하나만* 생성합니다.
   final FacilityService facilityService = FacilityService();
+
+  //대회 api 서비스 생성
+  final competitionApiService = CompetitionApiService();
 
   runApp(
     MultiProvider(
@@ -28,7 +39,23 @@ void main() {
           create: (_) => FacilityDetailViewModel(facilityService),
         ),
 
-        // (나중에 다른 ViewModel이 생기면 여기에 추가...)
+
+        //커뮤니티-자유게시판
+        ChangeNotifierProvider(
+          create: (_) => FreeBoardViewModel()..loadInitialData(),),
+        ChangeNotifierProvider(
+          create: (_) => CommentViewModel(),),
+
+        //커뮤니티-대회
+        ChangeNotifierProvider(
+          create: (_) => CompetitionViewModel()..loadCompetitions(),),
+
+        //커뮤니티-뉴스
+        ChangeNotifierProvider(create: (_) => NewsViewModel()..loadNews()),
+
+        //커뮤니티-설문조사
+        ChangeNotifierProvider(
+          create: (_) => SurveyViewModel()..loadSurvey(),),
       ],
       child: const MyApp(),
     ),
@@ -47,4 +74,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
