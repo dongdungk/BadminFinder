@@ -22,8 +22,7 @@ import '/static/view/search_gym.dart';
 import '/static/view/facilities_status.dart';
 import '/static/view/compare_status.dart';
 import '/static/view/status_tabbar.dart';
-
-import 'login/view/login_view.dart';
+import 'login/view/login_view.dart'; // router.dart에서 LoginPage를 사용하기 위해 필요
 import 'map/view/main_screen.dart';
 import 'map/view/map_main_screen.dart';
 import 'map/view/favorite_screen.dart';
