@@ -57,7 +57,7 @@ class SearchGymPage extends StatelessWidget {
                           left: 20,
                           top:  11,
                           child: Image(
-                              image: AssetImage('assets/icons/searchIcon.png'),
+                              image: AssetImage('assets/static/icons/searchIcon.png'),
                           ),
                         ),
                         Positioned(

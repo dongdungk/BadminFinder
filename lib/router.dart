@@ -13,6 +13,11 @@ import 'community/view/freeboard/freeboard_writing_page.dart';
 import 'community/view/news/news_page.dart';
 import 'community/view/news/news_see_more_page.dart';
 import 'community/view/survey/survey_page.dart';
+import '/static/view/local_status.dart';
+import '/static/view/search_gym.dart';
+import '/static/view/facilities_status.dart';
+import '/static/view/compare_status.dart';
+import '/static/view/status_tabbar.dart';
 import 'map/view/main_screen.dart'; // 4단계에서 수정할 MainScreen
 import 'map/view/map_main_screen.dart';
 import '/map/view/favorite_screen.dart';
@@ -70,8 +75,26 @@ final goRouter = GoRouter(
           navigatorKey: _shellNavigatorStatsKey,
           routes: [
             GoRoute(
-              path: '/stats',
-              builder: (context, state) => const Center(child: Text('통계 화면')),
+              path: '/static',
+              builder: (context, state) => const StatusTabbar(),
+              routes:[
+                GoRoute(
+                  path: 'compare',
+                  builder: (context, state) => const GymCompareStatPage(),
+                ),
+                GoRoute(
+                  path: 'facilities',
+                  builder: (context, state) => const FacilitiesStatusPage(),
+                ),
+                GoRoute(
+                  path: 'LocalStat',
+                  builder: (context, state) => const LocalStatusPage(),
+                ),
+                GoRoute(
+                  path: 'SearchGym',
+                  builder: (context, state) => const SearchGymPage(),
+                ),
+              ]
             ),
           ],
         ),

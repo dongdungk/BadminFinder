@@ -13,14 +13,13 @@ class StatusTabbar extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        appBar:  AppBar(
-          bottom: const TabBar(
+        appBar:  const TabBar(
+          padding: EdgeInsets.only(top: 20),
           tabs: <Widget>[
             Tab(text: '시설 분석',),
             Tab(text: '지역별 비교',),
             Tab(text: '체육관별 비교',),
           ],
-        ),
         ),
         body: const TabBarView(children: [
           Center(child: SafeArea(child: StatusMainPage(),),),

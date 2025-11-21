@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:seokju/router.dart';
 import 'status_tabbar.dart';
 
 
@@ -96,7 +98,7 @@ class GymCompareStatPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        child: Image(image: AssetImage('assets/yellowCircle.png'),),
+                        child: Image(image: AssetImage('assets/static/yellowCircle.png'),),
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 7),
@@ -115,7 +117,7 @@ class GymCompareStatPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        child: Image(image: AssetImage('assets/greenCircle.png'),),
+                        child: Image(image: AssetImage('assets/static/greenCircle.png'),),
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 7),
@@ -174,7 +176,7 @@ class GymCompareStatPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        child: Image(image: AssetImage('assets/icons/favoriteIcon.png'), width: 17, height: 17, fit: BoxFit.cover,),
+                        child: Image(image: AssetImage('assets/static/icons/favoriteIcon.png'), width: 17, height: 17, fit: BoxFit.cover,),
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 7),
@@ -193,7 +195,7 @@ class GymCompareStatPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        child: Image(image: AssetImage('assets/icons/favoriteIcon.png'), width: 17, height: 17, fit: BoxFit.cover,),
+                        child: Image(image: AssetImage('assets/static/icons/favoriteIcon.png'), width: 17, height: 17, fit: BoxFit.cover,),
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 7),
@@ -222,7 +224,7 @@ class GymCompareStatPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        child: Image(image: AssetImage('assets/icons/markerIcon.png'),width: 17, height: 17, fit: BoxFit.cover,),
+                        child: Image(image: AssetImage('assets/static/icons/markerIcon.png'),width: 17, height: 17, fit: BoxFit.cover,),
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 7),
@@ -241,7 +243,7 @@ class GymCompareStatPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        child: Image(image: AssetImage('assets/icons/markerIcon.png'), width: 17, height: 17, fit: BoxFit.cover,),
+                        child: Image(image: AssetImage('assets/static/icons/markerIcon.png'), width: 17, height: 17, fit: BoxFit.cover,),
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 7),
@@ -282,7 +284,7 @@ class GymCompareStatPage extends StatelessWidget {
                         child: Row(
                           spacing: 5,
                           children: [
-                            Image(image: AssetImage('assets/blueCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
+                            Image(image: AssetImage('assets/static/blueCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
                             Text('주차장')
                           ],
                         ),
@@ -294,7 +296,7 @@ class GymCompareStatPage extends StatelessWidget {
                         child: Row(
                           spacing: 5,
                           children: [
-                            Image(image: AssetImage('assets/greenCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
+                            Image(image: AssetImage('assets/static/greenCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
                             Text('주차장')
                           ],
                         ),
@@ -309,7 +311,7 @@ class GymCompareStatPage extends StatelessWidget {
                         child: Row(
                           spacing: 5,
                           children: [
-                            Image(image: AssetImage('assets/blueCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
+                            Image(image: AssetImage('assets/static/blueCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
                             Text('샤워실')
                           ],
                         ),
@@ -321,7 +323,7 @@ class GymCompareStatPage extends StatelessWidget {
                         child: Row(
                           spacing: 5,
                           children: [
-                            Image(image: AssetImage('assets/greenCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
+                            Image(image: AssetImage('assets/static/greenCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
                             Text('샤워실')
                           ],
                         ),
@@ -336,7 +338,7 @@ class GymCompareStatPage extends StatelessWidget {
                         child: Row(
                           spacing: 5,
                           children: [
-                            Image(image: AssetImage('assets/blueCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
+                            Image(image: AssetImage('assets/static/blueCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
                             Text('라커')
                           ],
                         ),
@@ -348,7 +350,7 @@ class GymCompareStatPage extends StatelessWidget {
                         child: Row(
                           spacing: 5,
                           children: [
-                            Image(image: AssetImage('assets/greenCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
+                            Image(image: AssetImage('assets/static/greenCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
                             Text('매점')
                           ],
                         ),
@@ -368,7 +370,7 @@ class GymCompareStatPage extends StatelessWidget {
                         child: Row(
                           spacing: 5,
                           children: [
-                            Image(image: AssetImage('assets/greenCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
+                            Image(image: AssetImage('assets/static/greenCircle.png'),width: 6, height: 6, fit: BoxFit.fill,),
                             Text('라커')
                           ],
                         ),
@@ -393,7 +395,9 @@ class GymCompareStatPage extends StatelessWidget {
               )
             ),
             child: ElevatedButton(
-                onPressed: (){},
+                onPressed: (){
+                  // context.push('/static/SearchGym');
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xff155DFC),
                   foregroundColor: Colors.white,

@@ -3,7 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart'; // Google Maps �
 // ⭐️ 1. [수정] go_router 패키지를 import 합니다.
 import 'package:go_router/go_router.dart';
 // ⭐️ 2. [삭제] main_screen.dart의 GlobalKey 임포트가 더 이상 필요 없습니다.
-// import 'package:victor/map/view/main_screen.dart'; // (삭제)
+
 
 class TaggingMainScreen extends StatefulWidget {
   const TaggingMainScreen({super.key});
