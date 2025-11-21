@@ -143,6 +143,7 @@ final goRouter = GoRouter(
                   builder: (context, state) => const FreeBoarCommentPage(),
                 ),
 
+
                 // 대회
                 GoRoute(
                   path: 'competition',
