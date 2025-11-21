@@ -1,103 +1,106 @@
-import 'dart:convert'; // 1. JSON 변환을 위해 'dart:convert' 임포트
-import 'package:http/http.dart' as http; // 2. 'http' 패키지 임포트
-import '/map/model/facility_model.dart'; // 3. 붕어빵 틀(Model) 임포트
+// lib/map/service/facility_service.dart
 
-// "손과 발" (실제 외부 API/DB 통신)
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../model/facility_model.dart';
+
 class FacilityService {
+  final String _seoulBaseUrl = 'http://openAPI.seoul.go.kr:8088';
+  final String _serviceName = 'facilities';
 
-  // ---!!! [핵심 수정] 님이 승인받은 "진짜" API 정보 !!!---
-  final String _baseUrl = "https://api.odcloud.kr/api"; // 1. 님이 받은 Base URL
-  final String _apiKey = "e6d62c5973164a3552572d4320463edccb6a11e7ef843f5c81f98b757c3a9edd"; // 2. 님이 받은 인증키
-
-  // 3. 님이 찾은 4개의 API Endpoint 목록
-  final Map<String, String> _apiEndpoints = {
-    '광진': '/15015554/v1/uddi:f3d6dfbf-fdb9-402e-811b-fd72e4eed74d',
-    '송파': '/15005433/v1/uddi:75702525-9c23-414e-b529-d9e61c814cba',
-    '성북': '/15040336/v1/uddi:8879f548-577c-4558-9401-e7c9e9a1d13e',
-    '동작': '/15016523/v1/uddi:0f19c236-7ae3-422b-95ff-c40b7b3e667c',
+  // ⭐️ [유지] 영어 검색어를 한글 자치구명으로 변환하는 맵은 필수입니다.
+  final Map<String, String> _queryAliases = {
+    'songpa': '송파', 'gwangjin': '광진', 'seongbuk': '성북', 'dongjak': '동작',
+    'gangseo': '강서', 'gangnam': '강남', 'seocho': '서초', 'mapo': '마포',
+    'yeongdeungpo': '영등포', 'yongsan': '용산', 'eunpyeong': '은평',
+    'jongno': '종로', 'jung': '중구', 'junggu': '중구', 'jungnang': '중랑',
+    'dobong': '도봉', 'nowon': '노원', 'guro': '구로', 'geumcheon': '금천',
+    'gwanak': '관악', 'gangdong': '강동', 'gangbuk': '강북',
+    'yangcheon': '양천', 'seongdong': '성동', 'seodaemun': '서대문',
   };
-  // -----------------------------------------------------------------
 
-
-  // ViewModel이 호출할 '검색' 기능
   Future<List<FacilityModel>> searchFacilities(String query) async {
+    // 1. 사용자 입력 (영어)을 소문자로 정리
+    String processedQuery = query.toLowerCase().trim();
 
-    // ---!!! [핵심 수정] 쿼리(query)를 소문자로 변경하고, 영어도 확인 !!!---
-    String? districtKey;
-    String lowercaseQuery = query.toLowerCase(); // 1. "Songpa" -> "songpa"
+    // 2. 맵을 통해 검색어를 한글 자치구 이름으로 변환 (예: 'guro' -> '구로')
+    String searchKeyword = _queryAliases[processedQuery] ?? processedQuery;
 
-    if (lowercaseQuery.contains('광진') || lowercaseQuery.contains('gwangjin')) {
-      districtKey = '광진';
-    } else if (lowercaseQuery.contains('송파') || lowercaseQuery.contains('songpa')) { // 2. "songpa" (영어) 추가!
-      districtKey = '송파';
-    } else if (lowercaseQuery.contains('성북') || lowercaseQuery.contains('seongbuk')) {
-      districtKey = '성북';
-    } else if (lowercaseQuery.contains('동작') || lowercaseQuery.contains('dongjak')) {
-      districtKey = '동작';
-    } else {
-      // (일치하는 지역구가 없으면 빈 리스트 반환)
-      return [];
-    }
+    final String? serviceKey = dotenv.env['SEOUL_API_KEY'];
+    if (serviceKey == null) return [];
 
-    // 1. 님이 검색한 '지역구'에 맞는 Endpoint 주소를 가져옴
-    final String? endpoint = _apiEndpoints[districtKey];
-    if (endpoint == null) return [];
-
-    // 2. 님이 검색한 '지역구'의 API를 호출!
-    final response = await http.get(
-      Uri.parse('$_baseUrl$endpoint?serviceKey=$_apiKey&page=1&perPage=100'),
+    final Uri url = Uri.parse(
+        '$_seoulBaseUrl/$serviceKey/json/$_serviceName/1/1000/'
     );
 
-    if (response.statusCode == 200) {
-      // 3. 성공!
-      final Map<String, dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+    print('Calling Seoul API: $url');
 
-      // 4. "data" 키 확인
-      if (data.containsKey('data') && data['data'] is List) {
+    try {
+      final response = await http.get(url);
 
-        final List<dynamic> facilityListJson = data['data'];
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> body =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
-        // 5. 붕어빵 리스트로 찍어내기
-        List<FacilityModel> facilities = facilityListJson.map((json) => FacilityModel.fromJson(json)).toList();
-
-        // 6. (필터링) "송파 배드민턴"이라고 검색했다면, "배드민턴"만 필터링
-        String filterQuery = lowercaseQuery.replaceAll(districtKey.toLowerCase(), '').trim();
-        if (filterQuery.isNotEmpty) {
-          facilities = facilities.where((facility) =>
-          facility.name.toLowerCase().contains(filterQuery) ||
-              facility.category.toLowerCase().contains(filterQuery)
-          ).toList();
+        List<dynamic> dataList = [];
+        if (body.containsKey(_serviceName)) {
+          dataList = body[_serviceName]['row'];
+        } else if (body.containsKey('DATA')) {
+          dataList = body['DATA'];
         }
 
+        // ⭐️⭐️⭐️ [최종 필터링 로직] ⭐️⭐️⭐️
+        List<FacilityModel> facilities = dataList
+            .map((jsonItem) => FacilityModel.fromJson(jsonItem))
+            .where((facility) {
+
+          // 1. 배드민턴 시설만 골라내기
+          bool isBadminton = facility.category.contains('배드민턴') ||
+              facility.name.contains('배드민턴');
+
+          // 2. 지역구 일치 여부 확인 (Model에서 이미 공백 제거 완료)
+          //    searchKeyword(한글)가 facility.district(한글)에 포함되는지 확인
+          //    (facility.district는 이미 깨끗하게 정제된 한글 자치구명입니다.)
+
+          // 검색어가 없으면 모두 통과
+          bool isLocationMatch = searchKeyword.isEmpty;
+
+          // 검색어가 있으면 자치구에 해당 검색어가 포함되어야 함
+          if (searchKeyword.isNotEmpty) {
+            // 자치구 이름도 소문자로 변환하여 비교 (만약을 위해)
+            String normalizedDistrict = facility.district.toLowerCase();
+            String normalizedSearch = searchKeyword.toLowerCase();
+
+            isLocationMatch = normalizedDistrict.contains(normalizedSearch);
+          }
+
+          return isBadminton && isLocationMatch;
+        })
+            .toList();
+
+        print('✅ Found ${facilities.length} badminton courts in "$searchKeyword"');
         return facilities;
 
       } else {
+        print('API 서버 에러: ${response.statusCode}');
         return [];
       }
-    } else {
-      // 7. 실패!
-      print("Service Error: Failed to search facilities. Status: ${response.statusCode}");
-      throw Exception('Failed to load facilities');
+    } catch (e) {
+      print('네트워크/파싱 에러: $e');
+      return [];
     }
   }
 
-
-  // ViewModel이 호출할 '시설 상세' 기능 (이전과 동일)
-  Future<FacilityModel> getFacilityDetail(String facilityId) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-
-    final allFacilities = [
-      ...await searchFacilities("광진"),
-      ...await searchFacilities("송파"),
-      ...await searchFacilities("성북"),
-      ...await searchFacilities("동작"),
-    ];
-
+  Future<FacilityModel?> getFacilityDetail(String facilityName) async {
+    // 상세 검색은 전체 목록에서 이름으로 찾습니다.
+    List<FacilityModel> allFacilities = await searchFacilities("");
     try {
-      return allFacilities.firstWhere((facility) => facility.id == facilityId);
+      return allFacilities.firstWhere(
+              (facility) => facility.name.contains(facilityName)
+      );
     } catch (e) {
-      print("Service Error: Failed to find detail for ID: $facilityId");
-      throw Exception('Failed to load facility detail');
+      return null;
     }
   }
 }

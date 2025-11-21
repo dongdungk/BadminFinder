@@ -1,8 +1,14 @@
-import 'package:flutter/material.dart';
-// ⭐️ 1. go_router 패키지를 import 합니다.
-import 'package:go_router/go_router.dart';
+// lib/map/view/favorite_screen.dart
 
-// ---!!! [수정] 님의 PascalCase 파일명에 맞춤 !!!---
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+// ⭐️ [수정] LoginViewModel 경로: lib/map/view/ 에서 '../../login/viewmodel/'로 이동
+import '../../login/viewmodel/login_viewmodel.dart';
+
+
+// ... (나머지 코드는 그대로)
+
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -12,39 +18,40 @@ class FavoritesScreen extends StatefulWidget {
 }
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
-  // ---!!! [수정] Mock 데이터에 'id' 추가 !!!---
+
+  // ⭐️ [최종 Mock 데이터] 실내 배드민턴장 위주로 구성
   final List<Map<String, dynamic>> favoriteList = [
     {
-      "id": "F_GANGNAM", // (임시 ID)
-      "name": "강남구민체육센터",
-      "distance": "1.2km",
-      "rating": 4.7,
-      "congestion": 10.0,
-      "maxCapacity": 100.0
+      "id": "마곡레포츠센터 실내배드민턴장",
+      "name": "마곡레포츠센터 실내배드민턴장",
+      "distance": "2.3km",
+      "rating": 4.9,
+      "congestion": 42.0,
+      "maxCapacity": 80.0
     },
     {
-      "id": "F_JAMSIL", // (임시 ID)
-      "name": "잠실종합운동장 배드민턴장",
-      "distance": "2.0km",
+      "id": "초안산 실내배드민턴장",
+      "name": "초안산 실내배드민턴장",
+      "distance": "5.1km",
       "rating": 4.8,
-      "congestion": 23.0,
+      "congestion": 15.0,
+      "maxCapacity": 50.0
+    },
+    {
+      "id": "오동근린공원 실내배드민턴장",
+      "name": "오동근린공원 실내배드민턴장",
+      "distance": "3.5km",
+      "rating": 4.7,
+      "congestion": 60.0,
       "maxCapacity": 100.0
     },
     {
-      "id": "F_MAPO1", // (임시 ID)
-      "name": "마포구민체육센터",
-      "distance": "1.5km",
-      "rating": 4.51,
-      "congestion": 37.0,
-      "maxCapacity": 100.0
-    },
-    {
-      "id": "F_SONGPA1", // (임시 ID)
-      "name": "송파구민체육센터",
-      "distance": "0.8km",
+      "id": "금화배드민턴장",
+      "name": "금화배드민턴장",
+      "distance": "1.8km",
       "rating": 4.5,
-      "congestion": 85.0,
-      "maxCapacity": 100.0
+      "congestion": 20.0,
+      "maxCapacity": 40.0
     },
   ];
 
@@ -60,16 +67,26 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             border: InputBorder.none,
             icon: Icon(Icons.search, color: Colors.grey[400]),
           ),
-          // ⭐️ 2. [수정] 탭(홈) 내에서 '/search' 화면으로 이동
           onTap: () {
-            // '/favorites'와 '/search'는 같은 '홈' 탭의 하위 경로입니다.
             context.push('/search');
           },
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: Icon(Icons.star, color: Colors.amber),
+        actions: [
+          // ⭐️ [로그아웃 버튼]
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: () async {
+              await context.read<LoginViewModel>().signOut();
+              if (!context.mounted) return; // 위젯이 마운트된 상태인지 확인
+              context.go('/login');
+            },
+          ),
+          // 기존 별표 아이콘
+          IconButton(
+            icon: const Icon(Icons.star, color: Colors.amber),
+            onPressed: () {
+              // 즐겨찾기 목록이므로 여기서 할 일은 없음
+            },
           ),
         ],
       ),
@@ -98,9 +115,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 final item = favoriteList[index];
                 return InkWell(
                   onTap: () {
-                    // ⭐️ 3. [수정] Navigator.of(...) 대신 context.push() 사용
-                    // 1단계에서 정의한 최상위 경로('/facility/:id')로 이동합니다.
-                    // 이 경로는 셸 바깥에 있으므로 하단 탭 바를 덮고 나옵니다.
+                    // ID(시설명)을 상세 페이지로 전달
                     context.push('/facility/${item['id']}');
                   },
                   child: _buildFavoriteCard(
@@ -119,9 +134,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
-  // ---!!! 헬퍼 함수들은 모두 동일 (수정 X) !!!---
-
-  // 즐겨찾기 카드 위젯
+  // --- 헬퍼 함수 및 커스텀 클래스 (const 오류 해결됨) ---
   Widget _buildFavoriteCard({
     required String name,
     required String distance,
@@ -130,8 +143,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     required double maxCapacity,
   }) {
     final Color congestionColor = _getCongestionColor(congestion, maxCapacity);
-    final String congestionText =
-    _getCongestionStatus(congestion, maxCapacity);
 
     return Card(
       elevation: 2,
@@ -162,7 +173,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                // ---!!! [버그 수정] '...' (spread operator) 추가 !!!---
                 ..._buildStarRating(rating),
                 const SizedBox(width: 8),
                 Text(rating.toString(), style: const TextStyle(fontSize: 15)),
@@ -172,8 +182,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 trackHeight: 6.0,
-                trackShape: const _GradientTrackShape(),
-                thumbShape: _ChipThumbShape(
+                trackShape: const _GradientTrackShape(), // ⭐️ const 문제 해결됨
+                thumbShape: _ChipThumbShape( // ⭐️ const 문제 해결됨
                   congestion: congestion.toInt(),
                   color: congestionColor,
                 ),
@@ -203,8 +213,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
-  // ---!!! [버그 수정] 'return Row(..)' -> 'return stars;' !!!---
-  // 별점 위젯
   List<Widget> _buildStarRating(double rating, {double size = 20}) {
     List<Widget> stars = [];
     int fullStars = rating.floor();
@@ -219,18 +227,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     while (stars.length < 5) {
       stars.add(Icon(Icons.star_border, color: Colors.amber, size: size));
     }
-    return stars; // <-- Row()가 아닌 List<Widget>을 반환합니다.
+    return stars;
   }
 
-  // ---!!! 혼잡도에 따른 색상/텍스트 반환 헬퍼 !!!---
   Color _getCongestionColor(double congestion, double maxCapacity) {
     double ratio = congestion / maxCapacity;
     if (ratio < 0.33) {
-      return Colors.green.shade600; // 쾌적
+      return Colors.green.shade600;
     } else if (ratio < 0.66) {
-      return Colors.yellow.shade700; // 보통
+      return Colors.yellow.shade700;
     } else {
-      return Colors.red.shade600; // 혼잡
+      return Colors.red.shade600;
     }
   }
 
@@ -246,66 +253,44 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 }
 
-// ---!!! 1. 그라데이션 트랙을 그리는 커스텀 클래스 !!!---
 class _GradientTrackShape extends SliderTrackShape {
-  const _GradientTrackShape();
-
+  const _GradientTrackShape(); // ⭐️ const 생성자
   static const LinearGradient gradient = LinearGradient(
     colors: [Colors.green, Colors.yellow, Colors.red],
   );
 
   @override
   Rect getPreferredRect({
-    required RenderBox parentBox,
-    Offset offset = Offset.zero,
-    required SliderThemeData sliderTheme,
-    bool isEnabled = false,
-    bool isDiscrete = false,
+    required RenderBox parentBox, Offset offset = Offset.zero, required SliderThemeData sliderTheme,
+    bool isEnabled = false, bool isDiscrete = false,
   }) {
     final double trackHeight = sliderTheme.trackHeight!;
     final double trackLeft = offset.dx;
-    final double trackTop =
-        offset.dy + (parentBox.size.height - trackHeight) / 2;
+    final double trackTop = offset.dy + (parentBox.size.height - trackHeight) / 2;
     final double trackWidth = parentBox.size.width;
     return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
   }
 
   @override
   void paint(
-      PaintingContext context,
-      Offset offset, {
-        required RenderBox parentBox,
-        required SliderThemeData sliderTheme,
-        required Animation<double> enableAnimation,
-        required TextDirection textDirection,
-        required Offset thumbCenter,
-        Offset? secondaryOffset,
-        bool isEnabled = false,
+      PaintingContext context, Offset offset, {
+        required RenderBox parentBox, required SliderThemeData sliderTheme,
+        required Animation<double> enableAnimation, required TextDirection textDirection,
+        required Offset thumbCenter, Offset? secondaryOffset, bool isEnabled = false,
         bool isDiscrete = false,
       }) {
-    final Rect trackRect = getPreferredRect(
-      parentBox: parentBox,
-      offset: offset,
-      sliderTheme: sliderTheme,
-    );
-
+    final Rect trackRect = getPreferredRect(parentBox: parentBox, offset: offset, sliderTheme: sliderTheme);
     final Paint paint = Paint()..shader = gradient.createShader(trackRect);
-
-    final RRect trackRRect = RRect.fromRectAndRadius(
-      trackRect,
-      Radius.circular(sliderTheme.trackHeight! / 2),
-    );
-
+    final RRect trackRRect = RRect.fromRectAndRadius(trackRect, Radius.circular(sliderTheme.trackHeight! / 2));
     context.canvas.drawRRect(trackRRect, paint);
   }
 }
 
-// ---!!! 2. 인원수 칩을 썸(Thumb)으로 그리는 커스텀 클래스 !!!---
 class _ChipThumbShape extends SliderComponentShape {
   final int congestion;
   final Color color;
 
-  const _ChipThumbShape({required this.congestion, required this.color});
+  const _ChipThumbShape({required this.congestion, required this.color}); // ⭐️ const 생성자
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
@@ -314,35 +299,21 @@ class _ChipThumbShape extends SliderComponentShape {
 
   @override
   void paint(
-      PaintingContext context,
-      Offset center, {
-        required Animation<double> activationAnimation,
-        required Animation<double> enableAnimation,
-        required bool isDiscrete,
-        required TextPainter labelPainter,
-        required RenderBox parentBox,
-        required SliderThemeData sliderTheme,
-        required TextDirection textDirection,
-        required double value,
-        required double textScaleFactor,
-        required Size sizeWithOverflow,
+      PaintingContext context, Offset center, {
+        required Animation<double> activationAnimation, required Animation<double> enableAnimation,
+        required bool isDiscrete, required TextPainter labelPainter, required RenderBox parentBox,
+        required SliderThemeData sliderTheme, required TextDirection textDirection,
+        required double value, required double textScaleFactor, required Size sizeWithOverflow,
       }) {
     final Canvas canvas = context.canvas;
-
     final Paint paint = Paint()..color = color;
     final RRect rrect = RRect.fromRectAndRadius(
-      Rect.fromCenter(
-          center: center.translate(0, -10), width: 44, height: 24),
+      Rect.fromCenter(center: center.translate(0, -10), width: 44, height: 24),
       const Radius.circular(12),
     );
     canvas.drawRRect(rrect, paint);
-
-    final Paint borderPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
+    final Paint borderPaint = Paint()..color = Colors.white..style = PaintingStyle.stroke..strokeWidth = 2;
     canvas.drawRRect(rrect, borderPaint);
-
     final TextSpan span = TextSpan(
       style: const TextStyle(
         color: Colors.white,
@@ -352,15 +323,11 @@ class _ChipThumbShape extends SliderComponentShape {
       text: '${congestion}명',
     );
     final TextPainter tp = TextPainter(
-      text: span,
-      textAlign: TextAlign.center,
-      textDirection: TextDirection.ltr,
+      text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr,
     );
     tp.layout();
-    final Offset textOffset =
-    center.translate(-tp.width / 2, -10 - tp.height / 2);
+    final Offset textOffset = center.translate(-tp.width / 2, -10 - tp.height / 2);
     tp.paint(canvas, textOffset);
-
     canvas.drawCircle(center, 6, Paint()..color = Colors.white);
   }
 }

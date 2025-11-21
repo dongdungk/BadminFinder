@@ -1,32 +1,33 @@
-// lib/map/service/photo_service.dart (새로 생성)
+// lib/map/service/facility_photo_service.dart (새로 생성)
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PhotoService {
-  // Firestore 인스턴스는 한 번만 생성
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // ⭐️ [핵심] 특정 시설의 이미지 URL 목록을 Firestore에서 가져옵니다.
-  Future<List<String>> getPhotoUrls(String facilityId) async {
+  // [핵심 기능] 특정 시설의 사진 URL 목록을 Firestore에서 가져옵니다.
+  Future<List<String>> getPhotos(String facilityId) async {
     try {
-      // 'facility_photos' 컬렉션에서 시설 ID에 해당하는 문서를 찾음
-      final doc = await _firestore
-          .collection('facility_photos')
-          .doc(facilityId) // 문서 ID가 시설 ID라고 가정
+      // 'photos' 컬렉션에서 해당 시설 ID의 문서를 찾습니다.
+      final snapshot = await _firestore
+          .collection('photos')
+          .where('facilityId', isEqualTo: facilityId)
+          .limit(1)
           .get();
 
-      if (doc.exists && doc.data()!.containsKey('imageUrls')) {
-        // 'imageUrls' 필드에서 URL 리스트를 가져와 List<String>으로 변환
-        return List<String>.from(doc.data()!['imageUrls']);
+      if (snapshot.docs.isEmpty) {
+        return [];
       }
 
-      return []; // 데이터가 없으면 빈 리스트 반환
+      final data = snapshot.docs.first.data();
+      final List<dynamic>? urls = data['urls'] as List<dynamic>?;
+
+      // List<dynamic>을 List<String>으로 변환하여 반환
+      return urls?.map((e) => e.toString()).toList() ?? [];
 
     } catch (e) {
-      print("Firestore Photo Service Error: $e");
+      print("Firestore Photos Error: $e");
       return [];
     }
   }
-
-// (향후 사진 업로드/삭제 기능은 이 Service에 추가됩니다.)
 }
