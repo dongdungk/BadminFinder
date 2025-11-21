@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'human_categories.dart';
 
 enum PeopleStatus{age, time, gender}
 
@@ -19,7 +20,7 @@ class FacilitiesStatusPage extends StatelessWidget { //시설분석통계창
                     children: [
                       Row(
                         children: [
-                          //Container(padding: EdgeInsets.only(left: 15), child: ),
+                          Container(padding: EdgeInsets.only(left: 15, top: 15), child: Image.asset('assets/static/icons/backIcon.png')),
                           Container(padding: EdgeInsets.only(left: 15, top: 15), child: Text('시설분석으로 돌아가기', style: TextStyle(fontSize: 14,fontWeight: FontWeight.w400),),),
                         ],
                       ),
@@ -32,32 +33,41 @@ class FacilitiesStatusPage extends StatelessWidget { //시설분석통계창
                 Container(//통계 항목 선택
 
                   margin: EdgeInsets.all(15),
-                  color: Color(0xFFFFFFFF),
-
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14.0),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Color(0x33000000),
+                            offset: const Offset(0, 1.5),
+                            blurRadius: 1,
+                            spreadRadius: 2
+                        ),
+                      ]
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Container(padding: EdgeInsets.all(5), child: Text('통계 항목 선택', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),),
-                      Row(
-                        children: [
-                          TextButton(onPressed: (){}, child: Text('연령별', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w100),),),
-                          TextButton(onPressed: (){}, child: Text('시간대별', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w100),),),
-                          TextButton(onPressed: (){}, child: Text('성별', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w100),),),
-
-
-                        ],
-                      )
+                      Container(padding: EdgeInsets.only(top: 10, left: 10, bottom: 5), child: Text('통계 항목 선택', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),),
+                      Container(width: double.maxFinite, height: 50, padding: EdgeInsets.all(10),child: HumanCategories())
                     ],
                   ),
-
-
                 ),
 
                 Container(//**별 이용현황
-
                   margin: EdgeInsets.all(15),
-                  color: Color(0xFFFFFFFF),
-
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14.0),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Color(0x33000000),
+                            offset: const Offset(0, 1.5),
+                            blurRadius: 1,
+                            spreadRadius: 2
+                        ),
+                      ]
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [

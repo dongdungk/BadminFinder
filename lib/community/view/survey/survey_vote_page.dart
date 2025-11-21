@@ -1,121 +1,147 @@
-//커뮤니티 - 설문조사 - 투표 중 view ui
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../../model/survey/survey_model.dart';
+import '../../view_model/survey/survey_view_model.dart';
 
-class SurveyVotePage extends StatelessWidget {
-  const SurveyVotePage({Key? key}) : super(key: key);
+class SurveyVotePage extends StatefulWidget {
+  @override
+  State<SurveyVotePage> createState() => _SurveyVotePageState();
+}
+
+class _SurveyVotePageState extends State<SurveyVotePage> {
+  int? selectedIndex;
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<SurveyViewModel>();
+    final SurveyModel survey = viewModel.selectedSurvey!;
+
     return Scaffold(
-      //상단 바
+      backgroundColor: Colors.white,
+
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-        ),
-        title: const Text(
-          '배드민턴 브랜드 투표',
-          style: TextStyle(
-              color: Colors.black
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: BackButton(color: Colors.black),
+
+        title: Expanded(
+          child: Text(
+            survey.question,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.visible,
           ),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: Colors.black),
       ),
 
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 22),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
               "가장 선호하는 배드민턴 라켓 브랜드는?",
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
             ),
-          ),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          //선택1
-          _buildOptionItem(
-            color: Colors.blue,
-            label: "YONEX 요넥스",
-          ),
+            ...List.generate(survey.options.length, (idx) {
+              final option = survey.options[idx];
 
-          //선택2
-          _buildOptionItem(
-            color: Colors.orange,
-            label: "VICTOR 빅터",
-          ),
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedIndex = idx;
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: selectedIndex == idx
+                          ? Colors.blue
+                          : Colors.grey.shade300,
+                      width: selectedIndex == idx ? 2 : 1,
+                    ),
+                  ),
 
-          //선택3
-          _buildOptionItem(
-            color: Colors.redAccent,
-            label: "LI-NING 리닝",
-          ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: selectedIndex == idx
+                                ? Colors.blue
+                                : Colors.grey,
+                            width: 2,
+                          ),
+                        ),
+                        child: selectedIndex == idx
+                            ? Center(
+                          child: Container(
+                            width: 10,
+                            height: 10,
+                            decoration: const BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        )
+                            : null,
+                      ),
 
-          //선택4
-          _buildOptionItem(
-            color: Colors.grey,
-            label: "기타",
-          ),
+                      const SizedBox(width: 12),
 
-          const Spacer(),
+                      Text(
+                        option.title,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
 
-          //투표
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: SizedBox(
+            const Spacer(),
+
+            SizedBox(
               width: double.infinity,
-              height: 48,
+              height: 52,
               child: ElevatedButton(
-                onPressed: null,
+                onPressed: selectedIndex == null
+                    ? null
+                    : () {
+                  viewModel.vote(survey.id, selectedIndex!);
+
+                  context.go('/community/survey/complete');
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor:
+                  selectedIndex == null ? Colors.grey : Colors.blue,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: const Text(
                   "투표하기",
-                  style: TextStyle(color: Colors.grey, fontSize: 15),
+                  style: TextStyle(fontSize: 17, color: Colors.white),
                 ),
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOptionItem({required Color color, required String label}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.black.withOpacity(0.3)),
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-        child: Row(
-          children: [
-            Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ],
         ),

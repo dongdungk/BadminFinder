@@ -18,29 +18,25 @@ import 'map/service/facility_service.dart';
 import 'map/service/facility_photo_service.dart' as Photo_Alias;
 import 'map/service/facility_review_service.dart' as Review_Alias;
 
-// [ViewModel Layer]
-import 'map/viewmodel/search_viewmodel.dart';
-import 'map/viewmodel/facility_detail_viewmodel.dart';
-import 'map/viewmodel/facility_review_viewmodel.dart';
-import 'map/viewmodel/facility_photo_viewmodel.dart'; //
+//커뮤니티 provider import
+import 'community/service/competition/competition_api_service.dart';
+import 'community/view_model/competition/competition_view_model.dart';
+import 'community/view_model/freeboard/freeboard_view_model.dart';
+import 'community/view_model/freeboard/writing_view_model.dart';
+import 'community/view_model/news/news_view_model.dart';
+import 'community/view_model/survey/survey_view_model.dart';
 
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  await dotenv.load(fileName: ".env");
-
-  // 1. Service 객체 생성
+void main() {
+  // ⭐️ 3. 두 ViewModel이 함께 사용할 FacilityService 객체를 *하나만* 생성합니다.
   final FacilityService facilityService = FacilityService();
   final AuthService authService = AuthService();
 
   // 별칭을 사용하여 클래스를 명확히 생성
   final Review_Alias.ReviewService reviewService = Review_Alias.ReviewService();
   final Photo_Alias.PhotoService photoService = Photo_Alias.PhotoService();
+
+  //대회 api 서비스 생성
+  final competitionApiService = CompetitionApiService();
 
   runApp(
     MultiProvider(
@@ -62,19 +58,23 @@ Future<void> main() async {
           create: (_) => FacilityDetailViewModel(facilityService, photoService),
         ),
 
-        // 5. [Review VM]
-        ChangeNotifierProvider(
-          create: (_) => FacilityReviewViewModel(reviewService),
-        ),
 
-        // 6. [Search VM]
+        //커뮤니티-자유게시판
         ChangeNotifierProvider(
-          create: (_) => SearchViewModel(facilityService),
-        ),
+          create: (_) => FreeBoardViewModel()..loadInitialData(),),
+        ChangeNotifierProvider(
+          create: (_) => CommentViewModel(),),
 
+        //커뮤니티-대회
         ChangeNotifierProvider(
-          create: (_) => FacilityPhotoViewModel(photoService),
-        ),
+          create: (_) => CompetitionViewModel()..loadCompetitions(),),
+
+        //커뮤니티-뉴스
+        ChangeNotifierProvider(create: (_) => NewsViewModel()..loadNews()),
+
+        //커뮤니티-설문조사
+        ChangeNotifierProvider(
+          create: (_) => SurveyViewModel()..loadSurvey(),),
       ],
       child: const MyApp(),
     ),

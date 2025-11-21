@@ -2,12 +2,24 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-// ⭐️ Project-Relative Imports (Final Structure)
-import 'map/view/main_screen.dart';
-import 'login/view/login_view.dart';
+import 'package:seokju/community/view/survey/survey_complete_page.dart';
+import 'package:seokju/community/view/survey/survey_result_page.dart';
+import 'package:seokju/community/view/survey/survey_vote_page.dart';
+import 'community/model/competition/competition_model.dart';
+import 'community/view/competition/competition_details_page.dart';
+import 'community/view/competition/competition_page.dart';
+import 'community/view/freeboard/freeboard_page.dart';
+import 'community/view/freeboard/freeboard_post_page.dart';
+import 'community/view/freeboard/freeboard_writing_page.dart';
+import 'community/view/news/news_page.dart';
+import 'community/view/news/news_see_more_page.dart';
+import 'community/view/survey/survey_page.dart';
+import '/static/view/local_status.dart';
+import '/static/view/search_gym.dart';
+import '/static/view/facilities_status.dart';
+import '/static/view/compare_status.dart';
+import '/static/view/status_tabbar.dart';
+import 'map/view/main_screen.dart'; // 4단계에서 수정할 MainScreen
 import 'map/view/map_main_screen.dart';
 import 'tagging/view/tagging_main_screen.dart';
 import 'community/view/freeboard/freeboard_page.dart';
@@ -96,6 +108,26 @@ final goRouter = GoRouter(
               path: '/stats',
               builder: (context, state) =>
               const Center(child: Text('통계 화면')),
+              path: '/static',
+              builder: (context, state) => const StatusTabbar(),
+              routes:[
+                GoRoute(
+                  path: 'compare',
+                  builder: (context, state) => const GymCompareStatPage(),
+                ),
+                GoRoute(
+                  path: 'facilities',
+                  builder: (context, state) => const FacilitiesStatusPage(),
+                ),
+                GoRoute(
+                  path: 'LocalStat',
+                  builder: (context, state) => const LocalStatusPage(),
+                ),
+                GoRoute(
+                  path: 'SearchGym',
+                  builder: (context, state) => const SearchGymPage(),
+                ),
+              ]
             ),
           ],
         ),
@@ -132,6 +164,75 @@ final goRouter = GoRouter(
                 GoRoute(
                   path: 'write', // '/community/write'
                   builder: (context, state) => const FreeBoardWritingPage(),
+              path: '/community',
+              builder: (context, state) => const FreeBoardPage(),
+              routes: [
+                // 자유게시판 목록
+                GoRoute(
+                  path: 'freeboard',
+                  builder: (context, state) => const FreeBoardPage(),
+                ),
+
+                // 게시글 상세페이지 (ID 없음)
+                GoRoute(
+                  path: 'freeboard/post',
+                  builder: (context, state) => const FreeBoardPostPage(),
+                ),
+
+                // 글작성
+                GoRoute(
+                  path: 'freeboard/write',
+                  builder: (context, state) => const FreeBoarCommentPage(),
+                ),
+
+                // 대회
+                GoRoute(
+                  path: 'competition',
+                  builder: (context, state) => const CompetitionPage(),
+                ),
+                GoRoute(
+                  path: 'competition/details',
+                  builder: (context, state) {
+                    final comp = state.extra as CompetitionModel;
+                    return CompetitionDetailPage(comp: comp);
+                  },
+                ),
+
+
+                // 뉴스
+                GoRoute(
+                  path: 'news',
+                  builder: (context, state) => const NewsPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'seemore',
+                      builder: (context, state) {
+                        final article = state.extra as Map<String, dynamic>;
+                        return NewsSeeMorePage(article: article);
+                      },
+                    ),
+                  ],
+                ),
+
+                // 설문
+                GoRoute(
+                  path: 'survey',
+                  builder: (context, state) => const SurveyPage(),
+                ),
+                // 설문 투표 중
+                GoRoute(
+                  path: 'survey/vote',
+                  builder: (context, state) => SurveyVotePage(),
+                ),
+                // 설문 투표 완료
+                GoRoute(
+                  path: 'survey/complete',
+                  builder: (context, state) => SurveyCompletePage(),
+                ),
+                // 설문 투표 결과
+                GoRoute(
+                  path: 'survey/result',
+                  builder: (context, state) => SurveyResultPage(),
                 ),
               ],
             ),
