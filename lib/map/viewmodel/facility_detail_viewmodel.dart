@@ -1,6 +1,7 @@
 // lib/map/viewmodel/facility_detail_viewmodel.dart
 
 import 'package:flutter/material.dart';
+import '/map/service/facility_review_service.dart';
 import '../model/facility_model.dart';
 import '../service/facility_service.dart';
 import '../service/facility_photo_service.dart'; // ⭐️ PhotoService 추가
@@ -17,7 +18,7 @@ class FacilityDetailViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   // ⭐️ [수정] 생성자가 FacilityService와 PhotoService 두 개를 모두 주입받음
-  FacilityDetailViewModel(this._facilityService, this._photoService);
+  FacilityDetailViewModel(this._facilityService, this._photoService, ReviewService reviewService);
 
   // ⭐️ [수정] loadFacility 함수에서 사진도 함께 로드합니다.
   Future<void> loadFacility(String facilityId) async {
