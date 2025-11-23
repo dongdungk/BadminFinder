@@ -12,7 +12,6 @@ import 'package:seokju/community/view/competition/competition_details_page.dart'
 import 'package:seokju/community/view/competition/competition_page.dart';
 import 'package:seokju/community/view/freeboard/freeboard_page.dart';
 import 'package:seokju/community/view/freeboard/freeboard_post_page.dart';
-import 'package:seokju/community/view/freeboard/freeboard_writing_page.dart';
 import 'package:seokju/community/view/news/news_page.dart';
 import 'package:seokju/community/view/news/news_see_more_page.dart';
 import 'package:seokju/community/view/survey/survey_page.dart';
@@ -22,6 +21,9 @@ import '/static/view/search_gym.dart';
 import '/static/view/facilities_status.dart';
 import '/static/view/compare_status.dart';
 import '/static/view/status_tabbar.dart';
+import 'community/model/freeboard/post_model.dart';
+import 'community/view/freeboard/freeboard_edit_page.dart';
+import 'community/view/freeboard/freeboard_write_page.dart';
 import 'login/view/login_view.dart'; // router.dart에서 LoginPage를 사용하기 위해 필요
 import 'map/view/main_screen.dart';
 import 'map/view/map_main_screen.dart';
@@ -164,30 +166,44 @@ final goRouter = GoRouter(
               path: '/community',
               builder: (context, state) => const FreeBoardPage(),
               routes: [
-                // 🔹 자유게시판
+                // 자유게시판 목록
                 GoRoute(
-                  path: 'post',
-                  builder: (context, state) => const FreeBoardPostPage(),
+                  path: 'freeboard',
+                  builder: (context, state) => const FreeBoardPage(),
                 ),
                 GoRoute(
-                  path: 'write',
-                  builder: (context, state) => const FreeBoarCommentPage(),
-                ),
-
-                // 🔹 대회
-                GoRoute(
-                  path: 'competition',
-                  builder: (context, state) => const CompetitionPage(),
-                ),
-                GoRoute(
-                  path: 'competition/details',
+                  path: 'freeboard/post',
                   builder: (context, state) {
-                    final comp = state.extra as CompetitionModel;
-                    return CompetitionDetailPage(comp: comp);
+                    final post = state.extra as PostModel;
+                    return FreeBoardPostPage(post: post);
+                  },
+                ),
+                GoRoute(
+                  path: 'freeboard/write',
+                  builder: (context, state) => const FreeBoardWritingPage(),
+                ),
+                GoRoute(
+                  path: 'freeboard/edit',
+                  builder: (context, state) {
+                    final post = state.extra as PostModel;
+                    return FreeBoardEditPage(post: post);
                   },
                 ),
 
-                // 🔹 뉴스
+                // // 🔹 대회
+                // GoRoute(
+                //   path: 'competition',
+                //   builder: (context, state) => const CompetitionPage(),
+                // ),
+                // GoRoute(
+                //   path: 'competition/details',
+                //   builder: (context, state) {
+                //     final comp = state.extra as CompetitionModel;
+                //     return CompetitionDetailPage(comp: comp);
+                //   },
+                // ),
+
+                // 뉴스
                 GoRoute(
                   path: 'news',
                   builder: (context, state) => const NewsPage(),
@@ -203,22 +219,22 @@ final goRouter = GoRouter(
                 ),
 
                 // 🔹 설문
-                GoRoute(
-                  path: 'survey',
-                  builder: (context, state) => const SurveyPage(),
-                ),
-                GoRoute(
-                  path: 'survey/vote',
-                  builder: (context, state) => SurveyVotePage(),
-                ),
-                GoRoute(
-                  path: 'survey/complete',
-                  builder: (context, state) => SurveyCompletePage(),
-                ),
-                GoRoute(
-                  path: 'survey/result',
-                  builder: (context, state) => SurveyResultPage(),
-                ),
+                // GoRoute(
+                //   path: 'survey',
+                //   builder: (context, state) => const SurveyPage(),
+                // ),
+                // GoRoute(
+                //   path: 'survey/vote',
+                //   builder: (context, state) => SurveyVotePage(),
+                // ),
+                // GoRoute(
+                //   path: 'survey/complete',
+                //   builder: (context, state) => SurveyCompletePage(),
+                // ),
+                // GoRoute(
+                //   path: 'survey/result',
+                //   builder: (context, state) => SurveyResultPage(),
+                // ),
               ],
             ),
           ],
