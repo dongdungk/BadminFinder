@@ -20,10 +20,10 @@ class FreeBoardViewModel extends ChangeNotifier {
 
   // ✅ 숨김/차단 (로컬 필터)
   final Set<String> hiddenPostIds = {};
-  final Set<String> blockedPostAuthorIds = {}; // uid 저장
+  final Set<String> blockedPostAuthorIds = {};
 
   final Set<String> hiddenCommentIds = {};
-  final Set<String> blockedCommentAuthorIds = {}; // uid 저장
+  final Set<String> blockedCommentAuthorIds = {};
 
   bool isHiddenPost(String postId) => hiddenPostIds.contains(postId);
   bool isBlockedPostAuthor(String authorUid) =>
@@ -33,9 +33,7 @@ class FreeBoardViewModel extends ChangeNotifier {
   bool isBlockedCommentAuthor(String authorUid) =>
       blockedCommentAuthorIds.contains(authorUid);
 
-  // ---------------------------------------------------
   // 게시글 로드
-  // ---------------------------------------------------
   Future<void> loadPosts() async {
     try {
       isLoading = true;
@@ -62,27 +60,21 @@ class FreeBoardViewModel extends ChangeNotifier {
     }
   }
 
-  // ---------------------------------------------------
   // 게시글 숨기기
-  // ---------------------------------------------------
   void hidePost(String postId) {
     hiddenPostIds.add(postId);
     posts.removeWhere((p) => p.id == postId);
     notifyListeners();
   }
 
-  // ---------------------------------------------------
-  // ✅ 게시글 작성자 차단 (uid 기반)
-  // ---------------------------------------------------
+  // 게시글 작성자 차단 (uid 기반)
   void blockPostAuthor(String authorUid) {
     blockedPostAuthorIds.add(authorUid);
     posts.removeWhere((p) => p.userId == authorUid);
     notifyListeners();
   }
 
-  // ---------------------------------------------------
   // 게시글 신고하기
-  // ---------------------------------------------------
   Future<void> reportPost({
     required String postId,
     required String reason,
@@ -96,9 +88,7 @@ class FreeBoardViewModel extends ChangeNotifier {
     });
   }
 
-  // ---------------------------------------------------
   // 게시글 작성
-  // ---------------------------------------------------
   Future<void> createPost(String title, String content, String icon) async {
     await _firestore.collection("posts").add({
       "title": title,
@@ -112,9 +102,7 @@ class FreeBoardViewModel extends ChangeNotifier {
     await loadPosts();
   }
 
-  // ---------------------------------------------------
-  // ✅ 게시글 수정 (본인 글만)
-  // ---------------------------------------------------
+  // 게시글 수정 (본인 글만)
   Future<void> updatePost(
       String id, String title, String content, String icon) async {
     final doc = await _firestore.collection("posts").doc(id).get();
@@ -134,9 +122,7 @@ class FreeBoardViewModel extends ChangeNotifier {
     await loadPosts();
   }
 
-  // ---------------------------------------------------
-  // ✅ 게시글 삭제 (본인 글만)
-  // ---------------------------------------------------
+  // 게시글 삭제 (본인 글만)
   Future<void> deletePost(String id) async {
     final doc = await _firestore.collection("posts").doc(id).get();
     final data = doc.data() as Map<String, dynamic>? ?? {};
@@ -148,7 +134,7 @@ class FreeBoardViewModel extends ChangeNotifier {
 
     await _firestore.collection("posts").doc(id).delete();
 
-    // ✅ 게시글 삭제 시 해당 댓글들 같이 삭제
+    // 게시글 삭제 시 해당 댓글들 같이 삭제
     final commentsSnap = await _firestore
         .collection("comments")
         .where("postId", isEqualTo: id)
@@ -160,9 +146,7 @@ class FreeBoardViewModel extends ChangeNotifier {
     await loadPosts();
   }
 
-  // ---------------------------------------------------
   // 좋아요 토글
-  // ---------------------------------------------------
   Future<void> toggleLike(PostModel post) async {
     final ref = _firestore.collection("posts").doc(post.id);
     final liked = isLiked(post.id);
@@ -179,9 +163,7 @@ class FreeBoardViewModel extends ChangeNotifier {
     await loadPosts();
   }
 
-  // ---------------------------------------------------
-  // 댓글 스트림 (무한로딩 방지: createdAt 없는 문서도 안전)
-  // ---------------------------------------------------
+  // 댓글 스트림 (무한로딩 방지)
   Stream<QuerySnapshot> streamComments(String postId) {
     return _firestore
         .collection("comments")
@@ -190,9 +172,7 @@ class FreeBoardViewModel extends ChangeNotifier {
         .snapshots();
   }
 
-  // ---------------------------------------------------
   // 댓글 개수
-  // ---------------------------------------------------
   Future<int> getCommentCount(String postId) async {
     final snap = await _firestore
         .collection("comments")
@@ -201,9 +181,7 @@ class FreeBoardViewModel extends ChangeNotifier {
     return snap.size;
   }
 
-  // ---------------------------------------------------
   // 댓글 추가
-  // ---------------------------------------------------
   Future<void> addComment(String postId, String content) async {
     await _firestore.collection("comments").add({
       "postId": postId,
@@ -214,9 +192,7 @@ class FreeBoardViewModel extends ChangeNotifier {
     });
   }
 
-  // ---------------------------------------------------
-  // ✅ 댓글 수정 (본인 댓글만)
-  // ---------------------------------------------------
+  // 댓글 수정 (본인 댓글만)
   Future<void> editComment(String commentId, String newContent) async {
     final doc = await _firestore.collection("comments").doc(commentId).get();
     final data = doc.data() as Map<String, dynamic>? ?? {};
@@ -232,10 +208,8 @@ class FreeBoardViewModel extends ChangeNotifier {
     });
   }
 
-  // ---------------------------------------------------
-  // ✅ 댓글 삭제
-  //  - 본인 댓글 OR 내가 쓴 게시글의 댓글이면 삭제 가능
-  // ---------------------------------------------------
+  // 댓글 삭제
+  // 본인 댓글 OR 내가 쓴 게시글의 댓글이면 삭제 가능
   Future<void> deleteComment({
     required String commentId,
     required String postOwnerUid,
@@ -254,9 +228,7 @@ class FreeBoardViewModel extends ChangeNotifier {
     await _firestore.collection("comments").doc(commentId).delete();
   }
 
-  // ---------------------------------------------------
   // 댓글 신고
-  // ---------------------------------------------------
   Future<void> reportComment({
     required String commentId,
     required String reason,
@@ -270,17 +242,13 @@ class FreeBoardViewModel extends ChangeNotifier {
     });
   }
 
-  // ---------------------------------------------------
   // 댓글 숨김 (로컬)
-  // ---------------------------------------------------
   void hideComment(String commentId) {
     hiddenCommentIds.add(commentId);
     notifyListeners();
   }
 
-  // ---------------------------------------------------
-  // ✅ 댓글 작성자 차단 (uid 기반)
-  // ---------------------------------------------------
+  //  댓글 작성자 차단
   void blockCommentAuthor(String authorUid) {
     blockedCommentAuthorIds.add(authorUid);
     notifyListeners();
