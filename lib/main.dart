@@ -61,21 +61,15 @@ void main() async {
           create: (_) => FacilityDetailViewModel(facilityService, photoService, reviewService),
         ),
 
-        // 자유게시판 Firestore CRUD
+        //자유게시판 Firestore CRUD
         ChangeNotifierProvider(
           create: (_) => FreeBoardViewModel(),
         ),
 
-        // 글쓰기 ViewModel
-        ChangeNotifierProvider(
-          create: (_) => FreeBoardViewModel(),
-        ),
-
-        // 뉴스 ViewModel
+        //뉴스 ViewModel
         ChangeNotifierProvider(
           create: (_) => NewsViewModel()..loadNews(),
         ),
-
       ],
       child: const MyApp(),
     ),

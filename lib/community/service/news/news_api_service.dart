@@ -8,7 +8,7 @@ class NewsApiService {
   Future<List<dynamic>> fetchBadmintonNews() async {
     final url = Uri.parse(
         "$baseUrl/search"
-            "?q=\"badminton\" OR \"배드민턴\" OR \"BWF\""   // 🔥 검색 범위 축소
+            "?q=\"badminton\" OR \"배드민턴\" OR \"BWF\""
             "&max=30"
             "&apikey=$apiKey"
     );

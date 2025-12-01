@@ -4,17 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:seokju/community/model/competition/competition_model.dart';
-import 'package:seokju/community/view/survey/survey_complete_page.dart';
-import 'package:seokju/community/view/survey/survey_result_page.dart';
-import 'package:seokju/community/view/survey/survey_vote_page.dart';
-import 'package:seokju/community/view/competition/competition_details_page.dart';
-import 'package:seokju/community/view/competition/competition_page.dart';
 import 'package:seokju/community/view/freeboard/freeboard_page.dart';
 import 'package:seokju/community/view/freeboard/freeboard_post_page.dart';
 import 'package:seokju/community/view/news/news_page.dart';
 import 'package:seokju/community/view/news/news_see_more_page.dart';
-import 'package:seokju/community/view/survey/survey_page.dart';
 
 import '/static/view/local_status.dart';
 import '/static/view/search_gym.dart';
@@ -190,19 +183,6 @@ final goRouter = GoRouter(
                   },
                 ),
 
-                // // 🔹 대회
-                // GoRoute(
-                //   path: 'competition',
-                //   builder: (context, state) => const CompetitionPage(),
-                // ),
-                // GoRoute(
-                //   path: 'competition/details',
-                //   builder: (context, state) {
-                //     final comp = state.extra as CompetitionModel;
-                //     return CompetitionDetailPage(comp: comp);
-                //   },
-                // ),
-
                 // 뉴스
                 GoRoute(
                   path: 'news',
@@ -217,24 +197,6 @@ final goRouter = GoRouter(
                     ),
                   ],
                 ),
-
-                // 🔹 설문
-                // GoRoute(
-                //   path: 'survey',
-                //   builder: (context, state) => const SurveyPage(),
-                // ),
-                // GoRoute(
-                //   path: 'survey/vote',
-                //   builder: (context, state) => SurveyVotePage(),
-                // ),
-                // GoRoute(
-                //   path: 'survey/complete',
-                //   builder: (context, state) => SurveyCompletePage(),
-                // ),
-                // GoRoute(
-                //   path: 'survey/result',
-                //   builder: (context, state) => SurveyResultPage(),
-                // ),
               ],
             ),
           ],

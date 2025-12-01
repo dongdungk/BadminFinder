@@ -7,7 +7,7 @@ class CommentModel {
   final String content;
   final DateTime createdAt;
   final String nickname;
-  final String userId; // ✅ 댓글 작성자 UID
+  final String userId;
 
   CommentModel({
     required this.id,
@@ -27,7 +27,7 @@ class CommentModel {
       content: (data["content"] ?? "").toString(),
       createdAt: (data["createdAt"] as Timestamp?)?.toDate() ?? DateTime.now(),
       nickname: (data["nickname"] ?? "익명").toString(),
-      userId: (data["userId"] ?? "").toString(), // ✅ 추가
+      userId: (data["userId"] ?? "").toString(),
     );
   }
 
@@ -37,7 +37,7 @@ class CommentModel {
       "content": content,
       "createdAt": Timestamp.now(),
       "nickname": nickname,
-      "userId": userId, // ✅ 추가
+      "userId": userId,
     };
   }
 }

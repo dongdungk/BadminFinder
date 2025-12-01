@@ -9,8 +9,7 @@ class PostModel {
   final int likes;
   final DateTime createdAt;
   final DateTime? updatedAt;
-  final String userId; // ✅ 작성자 UID
-
+  final String userId;
   PostModel({
     required this.id,
     required this.title,
@@ -33,7 +32,7 @@ class PostModel {
       likes: (data["likes"] ?? 0) as int,
       createdAt: (data["createdAt"] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (data["updatedAt"] as Timestamp?)?.toDate(),
-      userId: (data["userId"] ?? "").toString(), // ✅ 추가
+      userId: (data["userId"] ?? "").toString(),
     );
   }
 
@@ -45,7 +44,7 @@ class PostModel {
       "likes": likes,
       "createdAt": Timestamp.fromDate(createdAt),
       "updatedAt": updatedAt == null ? null : Timestamp.fromDate(updatedAt!),
-      "userId": userId, // ✅ 추가
+      "userId": userId,
     };
   }
 }

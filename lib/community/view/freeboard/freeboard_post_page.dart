@@ -79,7 +79,7 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
     );
   }
 
-  // 게시글 더보기
+  // ---------------- 게시글 더보기 ----------------
   void _openPostMoreSheet(FreeBoardViewModel vm, PostModel post) {
     showModalBottomSheet(
       context: context,
@@ -126,7 +126,7 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
                 leading: const Icon(Icons.block_outlined),
                 title: const Text("작성자 차단"),
                 onTap: () {
-                  vm.blockPostAuthor(post.userId);
+                  vm.blockPostAuthor(post.userId); // ✅ uid 기반
                   Navigator.pop(context);
                   context.pop();
                 },
@@ -140,12 +140,8 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
     );
   }
 
-  // 게시글 신고 (신고 + 숨김 + 차단 자동처리)
   void _openPostReportDialog(FreeBoardViewModel vm, String postId) {
     final ctrl = TextEditingController();
-    final post = vm.posts.firstWhere((p) => p.id == postId,
-        orElse: () => widget.post);
-
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -165,29 +161,13 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
           TextButton(
             onPressed: () async {
               final reason = ctrl.text.trim();
-
               if (reason.isNotEmpty) {
-                // 1) 신고 접수
                 await vm.reportPost(postId: postId, reason: reason);
-
-                // 2) 게시글 숨김
-                vm.hidePost(postId);
-
-                // 3) 작성자 차단
-                vm.blockPostAuthor(post.userId);
               }
-
               if (mounted) Navigator.pop(context);
-
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content:
-                  Text("신고가 접수되었으며 해당 게시글은 숨김 처리되고 작성자가 차단되었습니다."),
-                ),
+                const SnackBar(content: Text("신고가 접수되었습니다.")),
               );
-
-              // 상세보기 화면에서 뒤로가기
-              if (mounted) context.pop();
             },
             child: const Text("신고"),
           ),
@@ -196,7 +176,7 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
     );
   }
 
-  // 게시글 카드
+  // ---------------- 게시글 카드 ----------------
   Widget _postCard(FreeBoardViewModel vm, PostModel post) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -266,7 +246,7 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
     );
   }
 
-  // 댓글 영역
+  // ---------------- 댓글 영역 ----------------
   Widget _commentSection(FreeBoardViewModel vm, PostModel post) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -295,7 +275,7 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // 숨김/차단 필터
+          // ✅ 숨김/차단 필터 (authorUid 기반)
           final docs = snap.data!.docs.where((d) {
             final data = d.data() as Map<String, dynamic>? ?? {};
             final authorUid = (data["userId"] ?? "").toString();
@@ -349,7 +329,7 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
     );
   }
 
-  // 댓글 1개
+  // ---------------- 댓글 1개 ----------------
   Widget _commentItem({
     required FreeBoardViewModel vm,
     required String commentId,
@@ -373,10 +353,10 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
                       fontWeight: FontWeight.w700, fontSize: 14)),
               const SizedBox(width: 6),
               Text(_relativeTime(dt),
-                  style:
-                  TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
               const Spacer(),
 
+              // ✅ 댓글 수정 = 본인 댓글일 때만
               if (isCommentOwner)
                 InkWell(
                   onTap: () => _editCommentDialog(vm, commentId, content),
@@ -386,6 +366,7 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
 
               if (isCommentOwner) const SizedBox(width: 12),
 
+              // ✅ 댓글 삭제 = 본인 댓글 OR 내 게시글의 댓글
               if (isCommentOwner || isPostOwner)
                 InkWell(
                   onTap: () async {
@@ -424,7 +405,7 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
     );
   }
 
-  // 댓글 더보기
+  // ---------------- 댓글 더보기 ----------------
   void _openCommentMoreSheet(
       FreeBoardViewModel vm, String commentId, String authorUid) {
     showModalBottomSheet(
@@ -471,7 +452,7 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
                 leading: const Icon(Icons.block_outlined),
                 title: const Text("작성자 차단"),
                 onTap: () {
-                  vm.blockCommentAuthor(authorUid);
+                  vm.blockCommentAuthor(authorUid); // ✅ uid 기반
                   Navigator.pop(context);
                 },
               ),
@@ -484,7 +465,6 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
     );
   }
 
-  // 댓글 신고
   void _openCommentReportDialog(FreeBoardViewModel vm, String commentId) {
     final ctrl = TextEditingController();
 
@@ -511,7 +491,6 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
                 await vm.reportComment(commentId: commentId, reason: reason);
               }
               if (mounted) Navigator.pop(context);
-
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("신고가 접수되었습니다.")),
               );
@@ -523,7 +502,7 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
     );
   }
 
-  // 댓글 입력
+  // ---------------- 댓글 입력 ----------------
   Widget _commentInput(FreeBoardViewModel vm, String postId) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -572,7 +551,6 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
     );
   }
 
-  // 댓글 수정
   void _editCommentDialog(
       FreeBoardViewModel vm, String commentId, String oldContent) {
     final ctrl = TextEditingController(text: oldContent);
@@ -610,7 +588,6 @@ class _FreeBoardPostPageState extends State<FreeBoardPostPage> {
     );
   }
 
-  // 상대 시간 표시
   static String _relativeTime(DateTime dt) {
     final diff = DateTime.now().difference(dt);
     if (diff.inMinutes < 1) return "방금 전";
