@@ -37,7 +37,7 @@ class _SearchScreenState extends State<SearchScreen> {
           autofocus: true,
           decoration: InputDecoration(
             // ⭐️ [수정] 영어 검색만 유도
-            hintText: '시설 검색 (예: songpa, guro, gangnam)',
+            hintText: '시설 검색 (예: songpa, guro, gangnam 또는 송파, 구로, 강남)',
             hintStyle: TextStyle(color: Colors.grey[400]),
             border: InputBorder.none,
           ),
@@ -46,7 +46,7 @@ class _SearchScreenState extends State<SearchScreen> {
           },
         ),
         actions: [
-          // ⭐️ [로그아웃 버튼]
+          //⭐️ [로그아웃 버튼]
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
             onPressed: () async {
@@ -180,7 +180,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 children: [
                   const Icon(Icons.payment, size: 16, color: Colors.grey),
                   const SizedBox(width: 4),
-                  Text(facility.price, style: const TextStyle(fontSize: 14)), // 👈 Mock Data (e.g., 무료)
+                  Text(facility.price, style: const TextStyle(fontSize: 14)), //
                   const SizedBox(width: 12),
                   const Icon(Icons.call_outlined, size: 16, color: Colors.grey),
                   const SizedBox(width: 4),

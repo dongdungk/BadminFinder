@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// ⭐️ [Project-Relative Path]
 import '../service/auth_service.dart';
 
 class LoginViewModel extends ChangeNotifier {
@@ -18,7 +17,6 @@ class LoginViewModel extends ChangeNotifier {
   User? _user;
   User? get user => _user;
 
-  // ⭐️ [DI FIX] 생성자로 AuthService를 주입 받음
   LoginViewModel(this._authService);
 
   // ========================================
@@ -33,6 +31,7 @@ class LoginViewModel extends ChangeNotifier {
 
       if (user != null) {
         _user = user;
+        _errorMessage = null;
         _setLoading(false);
         print('Google 로그인 성공!');
         return true;
@@ -50,7 +49,7 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   // ========================================
-  // [추가] 이메일/비밀번호 회원가입
+  // 이메일/비밀번호 회원가입
   // ========================================
   Future<bool> signUpWithEmail(String email, String password) async {
     try {
@@ -61,6 +60,7 @@ class LoginViewModel extends ChangeNotifier {
 
       if (user != null) {
         _user = user;
+        _errorMessage = null;
         _setLoading(false);
         print('이메일 회원가입 성공! 사용자: ${user.email}');
         return true;
@@ -75,10 +75,11 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   // ========================================
-  // [추가] 이메일/비밀번호 로그인
+  // 이메일/비밀번호 로그인
   // ========================================
   Future<bool> signInWithEmail(String email, String password) async {
     try {
+
       _setLoading(true);
       _errorMessage = null;
 
@@ -86,6 +87,7 @@ class LoginViewModel extends ChangeNotifier {
 
       if (user != null) {
         _user = user;
+        _errorMessage = null;
         _setLoading(false);
         print('이메일 로그인 성공! 사용자: ${user.email}');
         return true;
@@ -93,6 +95,7 @@ class LoginViewModel extends ChangeNotifier {
       return false;
 
     } catch (e) {
+
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
       _setLoading(false);
       return false;
@@ -100,7 +103,7 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   // ========================================
-  // 로그아웃
+  // 로그아웃 (유지)
   // ========================================
   Future<void> signOut() async {
     await _authService.signOut();
@@ -108,7 +111,7 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 헬퍼 메서드 (생략)
+  // 헬퍼 메서드 (유지)
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
