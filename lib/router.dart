@@ -1,13 +1,9 @@
+// lib/router.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart'; // context.read<T>() 사용을 위해 필수
-
-// ⭐️ [필수 임포트] AuthService와 ReviewModel
-import 'login/service/auth_service.dart';
-import 'map/model/facility_review_model.dart';
-
-// Community Model & Views
+import 'package:provider/provider.dart';
 import 'package:seokju/community/model/competition/competition_model.dart';
 import 'package:seokju/community/view/survey/survey_complete_page.dart';
 import 'package:seokju/community/view/survey/survey_result_page.dart';
@@ -21,17 +17,14 @@ import 'package:seokju/community/view/news/news_page.dart';
 import 'package:seokju/community/view/news/news_see_more_page.dart';
 import 'package:seokju/community/view/survey/survey_page.dart';
 
-// Static Views
 import '/static/view/local_status.dart';
 import '/static/view/search_gym.dart';
 import '/static/view/facilities_status.dart';
 import '/static/view/compare_status.dart';
 import '/static/view/status_tabbar.dart';
+import 'login/view/login_view.dart'; // router.dart에서 LoginPage를 사용하기 위해 필요
 
-// Login Views
-import 'login/view/login_view.dart'; // LoginPage
-
-// Map & Tagging Views
+import 'login/view/login_view.dart';
 import 'map/view/main_screen.dart';
 import 'map/view/map_main_screen.dart';
 import 'map/view/favorite_screen.dart';
@@ -39,7 +32,6 @@ import 'map/view/search_screen.dart';
 import 'map/view/facility_detail_screen.dart';
 import 'map/view/facility_review_screen.dart';
 import 'map/view/facility_photo_screen.dart';
-import 'map/view/facility_review_edit_screen.dart';
 
 import 'tagging/view/tagging_main_screen.dart';
 import 'tagging/view/tagging_success_screen.dart';
@@ -52,64 +44,30 @@ final _shellNavigatorHomeKey = GlobalKey<NavigatorState>(debugLabel: 'ShellHome'
 final _shellNavigatorStatsKey = GlobalKey<NavigatorState>(debugLabel: 'ShellStats');
 final _shellNavigatorEditKey = GlobalKey<NavigatorState>(debugLabel: 'ShellEdit');
 final _shellNavigatorCommunityKey = GlobalKey<NavigatorState>(debugLabel: 'ShellCommunity');
-//
 final _shellNavigatorProfileKey = GlobalKey<NavigatorState>(debugLabel: 'ShellProfile');
 
-//
-final AuthService _authService = AuthService();
-
-
 // ------------------------------
-// GoRouter Definition
+// GoRouter
 // ------------------------------
 final goRouter = GoRouter(
   initialLocation: '/',
   navigatorKey: _rootNavigatorKey,
 
-  //
   redirect: (BuildContext context, GoRouterState state) {
-    // 1. StreamProvider를 통해 비동기 상태를 읽습니다.
-    final streamUser = context.read<User?>();
-    // 2. AuthService를 통해 현재 로그인된 유저 상태를 동기적으로 확인합니다.
-    final directUser = _authService.getCurrentUser();
-
-    // 3. 둘 중 하나라도 User 객체를 가지고 있다면 로그인된 상태로 간주합니다.
-    final isLoggedIn = streamUser != null || directUser != null;
-
+    final user = context.read<User?>();
+    final isLoggedIn = user != null;
     final isLoggingIn = state.uri.toString() == '/login';
 
-    //
-    final goingToHome = state.fullPath == '/';
-
     if (isLoggedIn) {
-      // A. 로그인되어 있을 때:
-      if (isLoggingIn) {
-        // 로그인 페이지 접근 시 -> 홈으로 이동
-        return '/';
-      }
-      return null; // 이미 로그인 상태이므로 리디렉션 없음
+      return isLoggingIn ? '/' : null;
     } else {
-      // B. 로그아웃 상태일 때 (충돌 발생 지점)
-      if (isLoggingIn) {
-        // 로그인 페이지에 있다면 리디렉션 없음
-        return null;
-      }
-
-      // ⭐️ [핵심 FIX] 로그아웃 상태여도 홈으로 가려는 요청은 허용 (상태 반영 시간 확보)
-      if (goingToHome) {
-        return null;
-      }
-
-      // 그 외의 모든 페이지 접근은 /login으로 강제 복귀
-      return '/login';
+      return isLoggingIn ? null : '/login';
     }
   },
-  // ⭐️⭐️⭐️ -------------------------------------------------- ⭐️⭐️⭐️
-
 
   routes: [
     // ------------------------------
-    // 로그인 (최상위)
+    // 로그인
     // ------------------------------
     GoRoute(
       path: '/login',
@@ -117,7 +75,7 @@ final goRouter = GoRouter(
     ),
 
     // ------------------------------
-    // 탭 구조 (StatefulShellRoute)
+    // 탭 구조
     // ------------------------------
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
@@ -126,7 +84,7 @@ final goRouter = GoRouter(
       branches: [
 
         // ------------------------------
-        // 탭 0: 홈 (map)
+        // 탭 0: 홈
         // ------------------------------
         StatefulShellBranch(
           navigatorKey: _shellNavigatorHomeKey,
@@ -149,7 +107,7 @@ final goRouter = GoRouter(
         ),
 
         // ------------------------------
-        // 탭 1: 통계 (static)
+        // 탭 1: 통계
         // ------------------------------
         StatefulShellBranch(
           navigatorKey: _shellNavigatorStatsKey,
@@ -180,7 +138,7 @@ final goRouter = GoRouter(
         ),
 
         // ------------------------------
-        // 탭 2: 입출입 (edit/tagging)
+        // 탭 2: 입출입
         // ------------------------------
         StatefulShellBranch(
           navigatorKey: _shellNavigatorEditKey,
@@ -199,7 +157,7 @@ final goRouter = GoRouter(
         ),
 
         // ------------------------------
-        // 탭 3: 커뮤니티 (community)
+        // 탭 3: 커뮤니티
         // ------------------------------
         StatefulShellBranch(
           navigatorKey: _shellNavigatorCommunityKey,
@@ -213,20 +171,22 @@ final goRouter = GoRouter(
                   path: 'post',
                   builder: (context, state) => const FreeBoardPostPage(),
                 ),
+                GoRoute(
+                  path: 'write',
+                  builder: (context, state) => const FreeBoarCommentPage(),
+                ),
 
                 // 🔹 대회
                 GoRoute(
                   path: 'competition',
                   builder: (context, state) => const CompetitionPage(),
-                  routes: [
-                    GoRoute(
-                      path: 'details',
-                      builder: (context, state) {
-                        final comp = state.extra as CompetitionModel;
-                        return CompetitionDetailPage(comp: comp);
-                      },
-                    ),
-                  ],
+                ),
+                GoRoute(
+                  path: 'competition/details',
+                  builder: (context, state) {
+                    final comp = state.extra as CompetitionModel;
+                    return CompetitionDetailPage(comp: comp);
+                  },
                 ),
 
                 // 🔹 뉴스
@@ -248,20 +208,18 @@ final goRouter = GoRouter(
                 GoRoute(
                   path: 'survey',
                   builder: (context, state) => const SurveyPage(),
-                  routes: [
-                    GoRoute(
-                      path: 'vote',
-                      builder: (context, state) => SurveyVotePage(),
-                    ),
-                    GoRoute(
-                      path: 'complete',
-                      builder: (context, state) => SurveyCompletePage(),
-                    ),
-                    GoRoute(
-                      path: 'result',
-                      builder: (context, state) => SurveyResultPage(),
-                    ),
-                  ],
+                ),
+                GoRoute(
+                  path: 'survey/vote',
+                  builder: (context, state) => SurveyVotePage(),
+                ),
+                GoRoute(
+                  path: 'survey/complete',
+                  builder: (context, state) => SurveyCompletePage(),
+                ),
+                GoRoute(
+                  path: 'survey/result',
+                  builder: (context, state) => SurveyResultPage(),
                 ),
               ],
             ),
@@ -269,10 +227,9 @@ final goRouter = GoRouter(
         ),
 
         // ------------------------------
-        // 탭 4: 내 정보 (profile)
+        // 탭 4: 내 정보
         // ------------------------------
         StatefulShellBranch(
-          // ⭐️ [FIXED] 올바른 키 타입 사용
           navigatorKey: _shellNavigatorProfileKey,
           routes: [
             GoRoute(
@@ -286,50 +243,30 @@ final goRouter = GoRouter(
     ),
 
     // ------------------------------
-    // 시설 상세 (탭 바를 덮는 최상위 페이지)
+    // 시설 상세 상위 페이지
     // ------------------------------
     GoRoute(
-        path: '/facility/:id',
-        builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return FacilityDetailScreen(facilityId: id);
-        },
-        routes: [
-          // 🔹 리뷰 목록
-          GoRoute(
-              path: 'reviews',
-              builder: (context, state) {
-                final id = state.pathParameters['id']!;
-                return FacilityReviewScreen(facilityId: id);
-              },
-              routes: [
-                // 🔹 리뷰 수정 (새로운 경로)
-                GoRoute(
-                  path: 'edit/:reviewId', // /facility/:id/reviews/edit/:reviewId
-                  builder: (context, state) {
-                    final reviewId = state.pathParameters['reviewId']!;
+      path: '/facility/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return FacilityDetailScreen(facilityId: id);
+      },
+    ),
 
-                    // extra로 전달받은 ReviewModel을 사용
-                    final reviewToEdit = state.extra as ReviewModel;
+    GoRoute(
+      path: '/facility/:id/reviews',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return FacilityReviewScreen(facilityId: id);
+      },
+    ),
 
-                    return ReviewEditScreen(
-                      reviewId: reviewId,
-                      reviewToEdit: reviewToEdit,
-                    );
-                  },
-                ),
-              ]
-          ),
-
-          // 🔹 사진 목록
-          GoRoute(
-            path: 'photos',
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              return FacilityPhotoScreen(facilityId: id);
-            },
-          ),
-        ]
+    GoRoute(
+      path: '/facility/:id/photos',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return FacilityPhotoScreen(facilityId: id);
+      },
     ),
   ],
 );

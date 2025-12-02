@@ -1,9 +1,9 @@
+// lib/map/view/facility_photo_screen.dart (최종 완성본)
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-// 뷰모델 임포트
+import 'package:flutter/scheduler.dart';
 import '../viewmodel/facility_photo_viewmodel.dart';
-import '../viewmodel/facility_detail_viewmodel.dart'; // ⭐️ 시설 이름 접근을 위해 추가
 
 class FacilityPhotoScreen extends StatefulWidget {
   final String facilityId;
@@ -11,7 +11,6 @@ class FacilityPhotoScreen extends StatefulWidget {
   const FacilityPhotoScreen({super.key, required this.facilityId});
 
   @override
-
   State<FacilityPhotoScreen> createState() => _FacilityPhotoScreenState();
 }
 
@@ -19,15 +18,14 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> with SingleTi
   late TabController _tabController;
   final List<String> _tabs = ['전체', '클럽', '방문자', '블로그', '인스타'];
 
+  // ⭐️ [FIX 1] 데이터 로딩이 한 번만 실행되도록 플래그 추가 (가장 중요)
+  bool _dataLoaded = false;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
-
-    // ⭐️ [표준 로딩] initState에서 Provider 로딩 요청
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FacilityPhotoViewModel>().loadPhotos(widget.facilityId);
-    });
+    // ❌ initState에서 Provider 호출 로직 제거 (Build에서 수행)
   }
 
   @override
@@ -38,20 +36,18 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    // ⭐️ FacilityDetailViewModel을 Consumer로 사용하여 동적 제목 설정
-    final facilityTitleConsumer = Consumer<FacilityDetailViewModel>(
-      builder: (context, detailVM, child) {
-        final facilityName = detailVM.facilityName ?? '시설 사진';
-        return Text(
-          facilityName,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        );
-      },
-    );
+
+    // ⭐️⭐️⭐️ [FIX 2] Provider가 확실히 유효할 때, 로딩을 단 한 번만 실행합니다. ⭐️⭐️⭐️
+    if (!_dataLoaded) {
+      // BuildContext가 완전히 유효할 때만 Provider에 접근합니다.
+      context.read<FacilityPhotoViewModel>().loadPhotos(widget.facilityId);
+      _dataLoaded = true;
+    }
+    // ⭐️⭐️⭐️ ----------------------------------------------------------- ⭐️⭐️⭐️
 
     return Scaffold(
       appBar: AppBar(
-        title: facilityTitleConsumer, // ⭐️ 동적 제목 위젯 사용
+        title: const Text('시설 사진', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, size: 20),
@@ -64,13 +60,15 @@ class _FacilityPhotoScreenState extends State<FacilityPhotoScreen> with SingleTi
             return const Center(child: CircularProgressIndicator());
           }
 
+          // ... (나머지 UI 로직은 동일) ...
+
           if (photoVM.photoUrls.isEmpty) {
             return const Center(child: Text('등록된 사진이 없습니다. 첫 사진을 올려보세요!'));
           }
 
           return Column(
             children: [
-              // 1. 사진 개수 및 업로드 버튼 섹션
+              // 1. 사진 개수 및 업로드 버튼 섹션 (전체 UI는 그대로 유지)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                 child: Row(

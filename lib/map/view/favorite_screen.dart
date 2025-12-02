@@ -72,7 +72,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           },
         ),
         actions: [
-          //⭐️ [로그아웃 버튼]
+          // ⭐️ [로그아웃 버튼]
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
             onPressed: () async {
@@ -81,7 +81,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               context.go('/login');
             },
           ),
-          //기존 별표 아이콘
+          // 기존 별표 아이콘
           IconButton(
             icon: const Icon(Icons.star, color: Colors.amber),
             onPressed: () {

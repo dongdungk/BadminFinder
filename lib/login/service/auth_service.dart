@@ -1,9 +1,10 @@
+// lib/login/service/auth_service.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  // ⭐️⭐️⭐️ [FIX] GoogleSignIn.instance를 사용하여 명시적으로 인스턴스를 가져옵니다. ⭐️⭐️⭐️
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // ========================================
@@ -11,14 +12,10 @@ class AuthService {
   // ========================================
   Future<User?> signInWithGoogle() async {
     try {
-      //
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return null;
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-      // ⭐[FIXED] GoogleAuthProvider.credential을 사용하여 Firebase 자격 증명 생성
-      // accessToken과 idToken 모두 사용 가능 (최신 API 대응)
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -86,7 +83,7 @@ class AuthService {
       }
       throw Exception(errorMessage);
     } catch (e) {
-      throw Exception('로그인 중 일반 오류 발생:$e');
+      throw Exception('로그인 중 일반 오류 발생');
     }
   }
 
@@ -95,7 +92,6 @@ class AuthService {
   // ========================================
   Future<void> signOut() async {
     await _auth.signOut();
-    // Google 로그아웃을 함께 처리하여 세션 충돌 방지
     await _googleSignIn.signOut();
   }
 
