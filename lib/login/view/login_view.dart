@@ -1,13 +1,10 @@
-// lib/auth/view/login_view.dart
+// lib/login/view/login_view.dart
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-// ⭐️ [필수] Future.delayed 사용을 위해 dart:async를 암시적으로 사용합니다.
-// import 'dart:async';
 
-// ViewModel 경로
-import '../viewmodel/login_viewmodel.dart';
+import 'package:seokju/login/viewmodel/login_viewmodel.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -21,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // 현재 로그인(true) 모드인지, 회원가입(false) 모드인지 구분.lll 123123123132,123123
+  // 현재 로그인(true) 모드인지, 회원가입(false) 모드인지 구분
   bool _isLoginMode = true;
 
   @override
@@ -34,10 +31,11 @@ class _LoginPageState extends State<LoginPage> {
   // ========================================
   // 공통 로그인 처리 함수 (Email/Pass)
   // ========================================
-  void _processAuth(BuildContext context, LoginViewModel viewModel) async {
+  void _processAuth() async {
+
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-
+    final viewModel=context.read<LoginViewModel>();
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('이메일과 비밀번호를 입력해주세요.')),
@@ -47,19 +45,22 @@ class _LoginPageState extends State<LoginPage> {
 
     bool success;
     if (_isLoginMode) {
+
       success = await viewModel.signInWithEmail(email, password);
     } else {
+
       success = await viewModel.signUpWithEmail(email, password);
     }
 
     if (success) {
-      print('${_isLoginMode ? "로그인" : "회원가입"} 성공! (0.5초 후 강제 전환)');
+      print('${_isLoginMode ? "로그인" : "회원가입"} 성공! (마이크로태스크 전환)');
 
-      // ⭐️⭐️⭐️ [최종 FIX 1] Future.delayed를 사용한 전환 ⭐️⭐️⭐️
+      // ⭐️ [FIX] Provider 상태 갱신 후 라우팅 (충돌 방지)
       if (!context.mounted) return;
-      Future.delayed(const Duration(milliseconds: 500), () {
+
+      Future.microtask(() {
         if (!context.mounted) return;
-        context.go('/');
+        context.go('/'); // 메인 화면으로 이동
       });
 
     } else {
@@ -128,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                       ElevatedButton(
                         onPressed: viewModel.isLoading
                             ? null
-                            : () => _processAuth(context, viewModel),
+                            : () => _processAuth(),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(double.infinity, 56),
                           backgroundColor: Color(0xFF5A4FCF), // 브랜드 색상 가정
@@ -189,6 +190,23 @@ class _LoginPageState extends State<LoginPage> {
                       child: CircularProgressIndicator(),
                     ),
                   ),
+
+                // ⭐️ 로그인 중 일반 오류 발생 메시지
+                if (viewModel.errorMessage != null && !viewModel.isLoading)
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      color: Colors.red.withOpacity(0.9),
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        viewModel.errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
               ],
             );
           },
@@ -206,10 +224,11 @@ class _LoginPageState extends State<LoginPage> {
         bool success = await viewModel.signInWithGoogle();
 
         if (success) {
-          print('Google 로그인 성공! (0.5초 후 강제 전환)');
+          print('Google 로그인 성공! (마이크로태스크 전환)');
 
-          // ⭐️⭐️⭐️ [최종 FIX 2] Future.delayed를 사용한 전환 ⭐️⭐️⭐️
-          Future.delayed(const Duration(milliseconds: 500), () {
+          // ⭐️ [FIX] Future.microtask를 사용한 전환
+          if (!context.mounted) return;
+          Future.microtask(() {
             if (!context.mounted) return;
             context.go('/');
           });
@@ -220,7 +239,7 @@ class _LoginPageState extends State<LoginPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(viewModel.errorMessage!)),
             );
-            viewModel.clearError(); // 에러 메시지 초기화
+            viewModel.clearError();
           }
         }
       },
