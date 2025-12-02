@@ -112,7 +112,11 @@ flutter:
     - assets/static/
     - assets/static/icons/
     - .env
-  #   - images/a_dot_burr.jpeg
+
+
+
+
+
   #   - images/a_dot_ham.jpeg
 
 

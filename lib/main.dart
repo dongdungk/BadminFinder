@@ -1,4 +1,4 @@
-// lib/main.dart (ProviderNotFoundException 해결 및 정리)
+// lib/main.dart (최종 빌드 성공 버전)
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -129,10 +129,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // goRouter는 router.dart 파일에서 임포트됩니다.
     return MaterialApp.router(
-      title: 'BadminFinder',
+      title: 'Facility Booking App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+
       debugShowCheckedModeBanner: false,
       routerConfig: goRouter,
     );
