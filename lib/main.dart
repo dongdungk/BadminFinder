@@ -14,14 +14,16 @@ import 'map/viewmodel/facility_detail_viewmodel.dart';
 import 'login/service/auth_service.dart';
 import 'login/viewmodel/login_viewmodel.dart';
 import 'map/service/facility_service.dart';
+import 'map/viewmodel/facility_detail_viewmodel.dart'; // ⭐️ FacilityDetailViewModel 임포트 추가
+import 'login/view/login_view.dart'; // ⭐️ LoginPage 임포트 추가 (router.dart 오류 해결용)
 
+// [Service Layer] - 별칭 사용
 import 'map/service/facility_photo_service.dart' as Photo_Alias;
 import 'map/service/facility_review_service.dart' as Review_Alias;
 
-// 커뮤니티 ViewModel
+//커뮤니티 provider import
 import 'community/view_model/freeboard/freeboard_view_model.dart';
 import 'community/view_model/news/news_view_model.dart';
-
 // 💡 Firebase 초기화 및 객체 생성 순서 조정 (오류 해결)
 void main() async {
   // 1. Flutter 바인딩 초기화 및 main 함수를 비동기로 만듦
@@ -39,7 +41,7 @@ void main() async {
 
   final Review_Alias.ReviewService reviewService = Review_Alias.ReviewService();
   final Photo_Alias.PhotoService photoService = Photo_Alias.PhotoService();
-  // final competitionApiService = CompetitionApiService();
+
 
   runApp(
     MultiProvider(
@@ -87,6 +89,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+
+      debugShowCheckedModeBanner: false,
       routerConfig: goRouter,
     );
   }
