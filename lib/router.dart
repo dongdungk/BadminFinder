@@ -230,7 +230,6 @@ final goRouter = GoRouter(
                 ),
 
 
-
                 // 🔹 뉴스
                 GoRoute(
                   path: 'news',
