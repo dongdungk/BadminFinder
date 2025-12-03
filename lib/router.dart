@@ -1,25 +1,22 @@
+// lib/router.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart'; // context.read<T>() 사용을 위해 필수
+import 'package:seokju/community/view/freeboard/freeboard_write_page.dart';
 
 // ⭐️ [필수 임포트] AuthService와 ReviewModel
+import 'community/model/freeboard/post_model.dart';
+import 'community/view/freeboard/freeboard_edit_page.dart';
 import 'login/service/auth_service.dart';
 import 'map/model/facility_review_model.dart';
 
 // Community Model & Views
-import 'package:seokju/community/model/competition/competition_model.dart';
-import 'package:seokju/community/view/survey/survey_complete_page.dart';
-import 'package:seokju/community/view/survey/survey_result_page.dart';
-import 'package:seokju/community/view/survey/survey_vote_page.dart';
-import 'package:seokju/community/view/competition/competition_details_page.dart';
-import 'package:seokju/community/view/competition/competition_page.dart';
 import 'package:seokju/community/view/freeboard/freeboard_page.dart';
 import 'package:seokju/community/view/freeboard/freeboard_post_page.dart';
-import 'package:seokju/community/view/freeboard/freeboard_writing_page.dart';
 import 'package:seokju/community/view/news/news_page.dart';
 import 'package:seokju/community/view/news/news_see_more_page.dart';
-import 'package:seokju/community/view/survey/survey_page.dart';
 
 // Static Views
 import '/static/view/local_status.dart';
@@ -210,24 +207,28 @@ final goRouter = GoRouter(
               routes: [
                 // 🔹 자유게시판
                 GoRoute(
-                  path: 'post',
-                  builder: (context, state) => const FreeBoardPostPage(),
+                  path: 'freeboard',
+                  builder: (context, state) => const FreeBoardPage(),
+                ),
+                GoRoute(
+                  path: 'freeboard/post',
+                  builder: (context, state) {
+                    final post = state.extra as PostModel;
+                    return FreeBoardPostPage(post: post);
+                  },
+                ),
+                GoRoute(
+                  path: 'freeboard/write',
+                  builder: (context, state) => const FreeBoardWritingPage(),
+                ),
+                GoRoute(
+                  path: 'freeboard/edit',
+                  builder: (context, state) {
+                    final post = state.extra as PostModel;
+                    return FreeBoardEditPage(post: post);
+                  },
                 ),
 
-                // 🔹 대회
-                GoRoute(
-                  path: 'competition',
-                  builder: (context, state) => const CompetitionPage(),
-                  routes: [
-                    GoRoute(
-                      path: 'details',
-                      builder: (context, state) {
-                        final comp = state.extra as CompetitionModel;
-                        return CompetitionDetailPage(comp: comp);
-                      },
-                    ),
-                  ],
-                ),
 
                 // 🔹 뉴스
                 GoRoute(
@@ -240,26 +241,6 @@ final goRouter = GoRouter(
                         final article = state.extra as Map<String, dynamic>;
                         return NewsSeeMorePage(article: article);
                       },
-                    ),
-                  ],
-                ),
-
-                // 🔹 설문
-                GoRoute(
-                  path: 'survey',
-                  builder: (context, state) => const SurveyPage(),
-                  routes: [
-                    GoRoute(
-                      path: 'vote',
-                      builder: (context, state) => SurveyVotePage(),
-                    ),
-                    GoRoute(
-                      path: 'complete',
-                      builder: (context, state) => SurveyCompletePage(),
-                    ),
-                    GoRoute(
-                      path: 'result',
-                      builder: (context, state) => SurveyResultPage(),
                     ),
                   ],
                 ),
