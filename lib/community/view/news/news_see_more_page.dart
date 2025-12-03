@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show AppBar, BorderRadius, BoxFit, BuildContext, ClipRRect, Colors, Column, CrossAxisAlignment, EdgeInsets, ElevatedButton, FontWeight, IconThemeData, Image, RoundedRectangleBorder, Scaffold, SingleChildScrollView, SizedBox, StatelessWidget, Text, TextStyle, Widget;
 import 'package:url_launcher/url_launcher.dart';
 
 class NewsSeeMorePage extends StatelessWidget {

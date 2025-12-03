@@ -77,14 +77,14 @@ class _MapMainScreenState extends State<MapMainScreen> {
           ),
         ),
         actions: [
-          // ⭐️ [로그아웃 버튼]
+          //⭐️ [로그아웃 버튼]
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.black),
-            onPressed: () async {
-              await context.read<LoginViewModel>().signOut();
-              if (!context.mounted) return; // 위젯이 마운트된 상태인지 확인
-              context.go('/login');
-            },
+           icon: const Icon(Icons.logout, color: Colors.black),
+          onPressed: () async {
+           await context.read<LoginViewModel>().signOut();
+           if (!context.mounted) return; // 위젯이 마운트된 상태인지 확인
+          context.go('/login');
+          },
           ),
           IconButton(
             icon: const Icon(Icons.star_border, color: Colors.black),
