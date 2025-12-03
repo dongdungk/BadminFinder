@@ -1,7 +1,9 @@
+// lib/map/view/facility_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
+// (이하 import는 동일)
 import '/map/model/facility_model.dart';
 import '/map/viewmodel/facility_detail_viewmodel.dart';
 
@@ -26,7 +28,6 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
-    // ⭐️ [필수] ViewModel을 읽어와 시설 정보 로드 시작
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<FacilityDetailViewModel>().loadFacility(widget.facilityId);
     });
@@ -40,13 +41,11 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    // ⭐️ ViewModel 구독 및 데이터 가져오기
     final viewModel = context.watch<FacilityDetailViewModel>();
     final FacilityModel? facility = viewModel.facility;
 
     return Scaffold(
       appBar: AppBar(
-        // ⭐️ Appbar 제목: ViewModel에서 직접 facility.name 사용
         title: Text(facility?.name ?? '로딩 중...'),
         actions: [
           IconButton(
@@ -63,7 +62,7 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
           ? const Center(child: CircularProgressIndicator())
           : facility == null
           ? const Center(child: Text('시설 정보를 불러오는 데 실패했습니다.'))
-          : _buildContentLoaded(context, facility), // 로딩 완료 시 컨텐츠 표시
+          : _buildContentLoaded(context, facility),
     );
   }
 
@@ -71,10 +70,10 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
     return SingleChildScrollView(
       child: Column(
         children: [
-          // 1. 이미지 슬라이더 (PageView.builder로 변경)
-          _buildImageSlider(context, facility.images), // ⭐️ context 전달
+          // ⭐️ [수정] 1. "진짜" 이미지 목록(facility.images)을 사용
+          _buildImageSlider(facility.images),
 
-          // 2. 탭 바 (탭 클릭 시 라우팅)
+          // 2. 탭 바 (동일)
           TabBar(
             controller: _tabController,
             labelColor: Colors.black,
@@ -86,7 +85,6 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
               _buildTab('사진'),
             ],
             onTap: (index) {
-              // ⭐️ 탭 클릭 시 해당 경로로 이동 후 탭을 '정보'로 다시 돌림
               if (index == 1) {
                 // '리뷰' 탭
                 context.push('/facility/${widget.facilityId}/reviews');
@@ -94,46 +92,50 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
                 // '사진' 탭
                 context.push('/facility/${widget.facilityId}/photos');
               }
-              _tabController.animateTo(0); // 현재 탭을 다시 정보 탭으로 되돌림
+              _tabController.animateTo(0);
             },
           ),
 
-          // 3. 정보 탭 컨텐츠
+          // 3. '정보' 탭 컨텐츠
           _buildInfoTabContent(facility),
         ],
       ),
     );
   }
 
-  // -----------------------------------------------------------------
-  // 헬퍼 위젯들
-  // -----------------------------------------------------------------
+  // ⭐️ 1. [수정] "가짜" tempImages 삭제
+  Widget _buildImageSlider(List<String> images) {
+    // (final List<String> tempImages = [...] <-- "가짜" 데이터 삭제!)
 
-  // ⭐️⭐️⭐️ [핵심 수정] _buildImageSlider 함수 (PageView.builder 사용) ⭐️⭐️⭐️
-  Widget _buildImageSlider(BuildContext context, List<String> images) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
+    // 이미지가 하나도 없을 경우 빈 회색 상자를 표시
     if (images.isEmpty) {
       return Container(
-        height: screenWidth * 0.7, // 높이를 화면 너비에 맞춰 설정
+        height: 250,
         color: Colors.grey[200],
         alignment: Alignment.center,
         child: Icon(Icons.image_not_supported_outlined, color: Colors.grey[400], size: 50),
       );
     }
 
-    // ⭐️ PageView.builder를 사용하여 스와이프 가능한 슬라이더 구현
     return Container(
-      height: screenWidth * 0.7, // 높이를 화면 너비의 70%로 설정
-      width: screenWidth, // 너비를 화면 가득 채움
-      child: PageView.builder(
-        itemCount: images.length,
+      height: 250,
+      child: GridView.builder(
+        padding: const EdgeInsets.all(0),
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: images.length, // "진짜" 데이터(images)의 길이 사용
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // (디자인에 맞게 1, 2 등으로 수정)
+          crossAxisSpacing: 2,
+          mainAxisSpacing: 2,
+        ),
         itemBuilder: (context, index) {
+          // "진짜" 데이터(images)의 URL을 사용
+          // (대부분의 서버 이미지는 'Image.network'를 사용합니다)
           return Image.network(
             images[index],
-            fit: BoxFit.cover, // 이미지가 컨테이너를 꽉 채우도록 설정
-            width: screenWidth, // Image 자체도 너비를 꽉 채우도록 설정
+            fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
+              // 이미지 로드 실패 시
               return Container(
                 color: Colors.grey[200],
                 alignment: Alignment.center,
@@ -145,8 +147,8 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
       ),
     );
   }
-  // ⭐️⭐️⭐️ ----------------------------------------------------------- ⭐️⭐️⭐️
 
+  // 탭 위젯 (이전과 동일)
   Widget _buildTab(String title) {
     return Tab(
       child: Container(
@@ -160,6 +162,7 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
     );
   }
 
+  // ⭐️ 2. [수정] "가짜" 인원 수 텍스트를 "진짜" Model 데이터로 교체
   Widget _buildInfoTabContent(FacilityModel facility) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -241,7 +244,8 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
                             : Colors.orange)),
                 const SizedBox(height: 8),
 
-                // 모델 데이터 사용 (현재 인원/정원)
+                // ⭐️ 2. [수정 완료] "가짜" 텍스트를 "진짜" Model 데이터로 교체
+                // (1단계에서 Model에 추가한 필드를 사용합니다)
                 Text(
                   '약 ${facility.currentOccupancy}명 (${facility.maxCapacity}명 정원)',
                   style: const TextStyle(fontSize: 15, color: Colors.black54),
@@ -254,6 +258,7 @@ class _FacilityDetailScreenState extends State<FacilityDetailScreen>
     );
   }
 
+  // 헬퍼 Row (이전과 동일)
   Widget _buildInfoRow(IconData icon, String title, String content,
       {Widget? trailingWidget}) {
     return Padding(

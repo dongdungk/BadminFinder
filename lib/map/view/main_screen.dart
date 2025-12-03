@@ -1,4 +1,5 @@
 // lib/main_screen.dart
+// (기존 import들은 대부분 필요 없고, go_router도 필요 없습니다)
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart'; // ⭐️ StatefulNavigationShell을 위해 필요
 
@@ -16,7 +17,7 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ️
+    // ‼️ 기존의 모든 로직(State, _selectedIndex, _onBottomNavItemTapped 등) 삭제 ‼️
 
     return Scaffold(
       resizeToAvoidBottomInset: false,

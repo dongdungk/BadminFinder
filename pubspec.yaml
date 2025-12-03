@@ -61,40 +61,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^6.0.0
-  flutter_launcher_icons: ^0.14.4 # dev_dependencies 섹션
-  flutter_native_splash: ^2.4.0
-
-flutter_launcher_icons:
-  ios: true
-  android: "launcher_icon"
-  remove_alpha_ios: true
-  image_path: "assets/static/icons/appicon.png"
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/static/icons/appicon.png"
-
-  # ... (dev_dependencies 섹션 끝)
-  flutter_launcher_icons: ^0.14.4
-  flutter_native_splash: ^2.4.0 # dev_dependencies 섹션
-
-# 👇 여기에 추가 (들여쓰기 주의: 최상위 레벨)
-flutter_native_splash:
-  color: "#FFFFFF"
-  image: "assets/static/icons/appicon.png" # ⚠️ 아이콘 경로에 맞게 수정했습니다.
-  android_gravity: center
-  ios_content_mode: center
-  fullscreen: true
-  android_12:
-    color: "#FFFFFF"
-    image: "assets/static/icons/appicon.png" # ⚠️ 아이콘 경로에 맞게 수정했습니다.
-
-
-# The following section is specific to Flutter packages.
-
-# ... (이하 flutter: 섹션 동일)
-
-# The following section is specific to Flutter packages.
-
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

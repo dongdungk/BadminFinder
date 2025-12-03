@@ -9,9 +9,7 @@ import '../service/facility_photo_service.dart'; // ⭐️ PhotoService 추가
 class FacilityDetailViewModel extends ChangeNotifier {
 
   final FacilityService _facilityService;
-  final PhotoService _photoService;
-  // ReviewService는 생성자에서만 사용되므로 final 필드로 선언할 필요는 없지만,
-  // 다른 메서드에서 사용하려면 final 필드로 선언하는 것이 좋습니다. (현재는 유지)
+  final PhotoService _photoService; // ⭐️ PhotoService 필드 추가
 
   FacilityModel? _facility;
   bool _isLoading = false;
@@ -19,13 +17,10 @@ class FacilityDetailViewModel extends ChangeNotifier {
   FacilityModel? get facility => _facility;
   bool get isLoading => _isLoading;
 
-  // ⭐️⭐️⭐️ 시설 이름 Getter 추가 ⭐️⭐️⭐️
-  String? get facilityName => _facility?.name;
-
-  // ⭐️ [수정] 생성자가 FacilityService, PhotoService, ReviewService를 모두 주입받음
+  // ⭐️ [수정] 생성자가 FacilityService와 PhotoService 두 개를 모두 주입받음
   FacilityDetailViewModel(this._facilityService, this._photoService, ReviewService reviewService);
 
-  // ⭐️ loadFacility 함수에서 사진도 함께 로드합니다.
+  // ⭐️ [수정] loadFacility 함수에서 사진도 함께 로드합니다.
   Future<void> loadFacility(String facilityId) async {
     _isLoading = true;
     _facility = null;
@@ -35,7 +30,7 @@ class FacilityDetailViewModel extends ChangeNotifier {
       // 1. 공공 API에서 시설 정보 로드
       final facilityDataFuture = _facilityService.getFacilityDetail(facilityId);
 
-      // 2. Firestore에서 이미지 URL 로드
+      // 2. ⭐️ Firestore에서 이미지 URL 로드
       final photoUrlsFuture = _photoService.getPhotos(facilityId);
 
       // 두 비동기 작업을 동시에 기다립니다.
@@ -43,9 +38,10 @@ class FacilityDetailViewModel extends ChangeNotifier {
       final FacilityModel? facilityData = results[0] as FacilityModel?;
       final List<String> photoUrls = results[1] as List<String>;
 
-      // 3. [합병] FacilityModel에 이미지 리스트를 넣어줍니다.
+      // 3. ⭐️ [합병] FacilityModel에 이미지 리스트를 넣어줍니다.
       if (facilityData != null) {
-        // FacilityModel에 copyWith 메서드가 없으므로, 새로운 Model 객체를 생성하여 이미지 리스트를 넣어줍니다.
+        // (주의: FacilityModel에 copyWith 메서드가 없으므로,
+        //  새로운 Model 객체를 생성하여 이미지 리스트를 넣어주는 방식으로 대체)
         _facility = FacilityModel(
           id: facilityData.id,
           name: facilityData.name,

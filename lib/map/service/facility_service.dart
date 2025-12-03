@@ -1,3 +1,5 @@
+// lib/map/service/facility_service.dart
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -7,8 +9,7 @@ class FacilityService {
   final String _seoulBaseUrl = 'http://openAPI.seoul.go.kr:8088';
   final String _serviceName = 'facilities';
 
-  // 영어 검색어를 한글 자치구명으로 변환하는 맵은 필수입니다.
-  // 이 맵의 '값(Values)'은 지역구 이름 식별에 사용됩니다.
+  // ⭐️ [유지] 영어 검색어를 한글 자치구명으로 변환하는 맵은 필수입니다.
   final Map<String, String> _queryAliases = {
     'songpa': '송파', 'gwangjin': '광진', 'seongbuk': '성북', 'dongjak': '동작',
     'gangseo': '강서', 'gangnam': '강남', 'seocho': '서초', 'mapo': '마포',
@@ -20,9 +21,10 @@ class FacilityService {
   };
 
   Future<List<FacilityModel>> searchFacilities(String query) async {
+    // 1. 사용자 입력 (영어)을 소문자로 정리
     String processedQuery = query.toLowerCase().trim();
 
-    // 1. 영어 별칭 변환 시도 (searchKeyword는 변환된 한글 자치구명, 또는 원본 쿼리)
+    // 2. 맵을 통해 검색어를 한글 자치구 이름으로 변환 (예: 'guro' -> '구로')
     String searchKeyword = _queryAliases[processedQuery] ?? processedQuery;
 
     final String? serviceKey = dotenv.env['SEOUL_API_KEY'];
@@ -48,43 +50,36 @@ class FacilityService {
           dataList = body['DATA'];
         }
 
-        // ⭐️⭐️⭐️ [최종 필터링 로직: 전략 분리] ⭐️⭐️⭐️
+        // ⭐️⭐️⭐️ [최종 필터링 로직] ⭐️⭐️⭐️
         List<FacilityModel> facilities = dataList
             .map((jsonItem) => FacilityModel.fromJson(jsonItem))
             .where((facility) {
 
-          // 1. 배드민턴 시설만 골라내기 (필수)
+          // 1. 배드민턴 시설만 골라내기
           bool isBadminton = facility.category.contains('배드민턴') ||
               facility.name.contains('배드민턴');
 
-          // 2. 검색어 일치 여부 확인 (지역구 또는 시설명)
-          bool isMatch = false;
+          // 2. 지역구 일치 여부 확인 (Model에서 이미 공백 제거 완료)
+          //    searchKeyword(한글)가 facility.district(한글)에 포함되는지 확인
+          //    (facility.district는 이미 깨끗하게 정제된 한글 자치구명입니다.)
 
-          if (searchKeyword.isEmpty) {
-            isMatch = true; // 검색어가 없으면 모든 배드민턴 시설 통과
-          } else {
+          // 검색어가 없으면 모두 통과
+          bool isLocationMatch = searchKeyword.isEmpty;
+
+          // 검색어가 있으면 자치구에 해당 검색어가 포함되어야 함
+          if (searchKeyword.isNotEmpty) {
+            // 자치구 이름도 소문자로 변환하여 비교 (만약을 위해)
+            String normalizedDistrict = facility.district.toLowerCase();
             String normalizedSearch = searchKeyword.toLowerCase();
 
-            // 💡 1. 검색어가 지역구 이름인지 확인 (Alias 맵의 값 목록 사용)
-            bool isDistrictName = _queryAliases.values.contains(normalizedSearch);
-
-            // ⭐️ 2. 검색 전략 분리 실행
-            if (isDistrictName) {
-              // A. '강남', '송파' 등 지역구 이름과 일치하면, 지역구 필터만 실행
-              // -> 강남구 시설만 나오도록 강제
-              isMatch = facility.district.toLowerCase().contains(normalizedSearch);
-            } else {
-              // B. '월곡', '스타일' 등 지역구 이름이 아닌 경우, 시설 이름 필터만 실행
-              isMatch = facility.name.toLowerCase().contains(normalizedSearch);
-            }
+            isLocationMatch = normalizedDistrict.contains(normalizedSearch);
           }
 
-          // 최종 반환: 배드민턴 시설이면서 검색 조건(지역/이름)에 맞아야 함
-          return isBadminton && isMatch;
+          return isBadminton && isLocationMatch;
         })
             .toList();
 
-        print('✅ Found ${facilities.length} badminton courts matching "$searchKeyword"');
+        print('✅ Found ${facilities.length} badminton courts in "$searchKeyword"');
         return facilities;
 
       } else {
