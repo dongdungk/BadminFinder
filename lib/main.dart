@@ -10,6 +10,9 @@ import 'firebase_options.dart';
 
 // ⭐️ Project-Relative Imports
 import 'router.dart';
+
+// Project Services & ViewModels
+import 'map/viewmodel/facility_detail_viewmodel.dart';
 import 'login/service/auth_service.dart';
 import 'login/viewmodel/login_viewmodel.dart';
 import 'map/service/facility_service.dart';
@@ -27,13 +30,9 @@ import 'map/viewmodel/facility_review_viewmodel.dart';
 import 'map/viewmodel/facility_photo_viewmodel.dart'; //
 
 //커뮤니티 provider import
-import 'community/service/competition/competition_api_service.dart';
-import 'community/view_model/competition/competition_view_model.dart';
 import 'community/view_model/freeboard/freeboard_view_model.dart';
 import 'community/view_model/freeboard/writing_view_model.dart'; // ⭐️ CommentViewModel 임포트 추가
 import 'community/view_model/news/news_view_model.dart';
-import 'community/view_model/survey/survey_view_model.dart';
-
 // 💡 Firebase 초기화 및 객체 생성 순서 조정 (오류 해결)
 void main() async {
   // 1. Flutter 바인딩 초기화 및 main 함수를 비동기로 만듦
@@ -86,11 +85,14 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => CompetitionViewModel()..loadCompetitions(),
         ),
+        //자유게시판 Firestore CRUD
+        ChangeNotifierProvider(
+          create: (_) => FreeBoardViewModel(),
+        ),
+
+        //뉴스 ViewModel
         ChangeNotifierProvider(
           create: (_) => NewsViewModel()..loadNews(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SurveyViewModel()..loadSurvey(),
         ),
       ],
       child: const MyApp(),

@@ -27,9 +27,7 @@ class CommunityTopTabs extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _tab('자유게시판', 'freeboard'),
-        _tab('대회', 'competition'),
         _tab('뉴스', 'news'),
-        _tab('설문조사', 'survey'),
       ],
     );
   }

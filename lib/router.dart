@@ -10,12 +10,20 @@ import 'package:seokju/community/view/survey/survey_result_page.dart';
 import 'package:seokju/community/view/survey/survey_vote_page.dart';
 import 'package:seokju/community/view/competition/competition_details_page.dart';
 import 'package:seokju/community/view/competition/competition_page.dart';
+import 'package:provider/provider.dart'; // context.read<T>() 사용을 위해 필수
+import 'package:seokju/community/view/freeboard/freeboard_write_page.dart';
+
+// ⭐️ [필수 임포트] AuthService와 ReviewModel
+import 'community/model/freeboard/post_model.dart';
+import 'community/view/freeboard/freeboard_edit_page.dart';
+import 'login/service/auth_service.dart';
+import 'map/model/facility_review_model.dart';
+
+// Community Model & Views
 import 'package:seokju/community/view/freeboard/freeboard_page.dart';
 import 'package:seokju/community/view/freeboard/freeboard_post_page.dart';
-import 'package:seokju/community/view/freeboard/freeboard_writing_page.dart';
 import 'package:seokju/community/view/news/news_page.dart';
 import 'package:seokju/community/view/news/news_see_more_page.dart';
-import 'package:seokju/community/view/survey/survey_page.dart';
 
 import '/static/view/local_status.dart';
 import '/static/view/search_gym.dart';
@@ -168,8 +176,8 @@ final goRouter = GoRouter(
               routes: [
                 // 🔹 자유게시판
                 GoRoute(
-                  path: 'post',
-                  builder: (context, state) => const FreeBoardPostPage(),
+                  path: 'freeboard',
+                  builder: (context, state) => const FreeBoardPage(),
                 ),
                 GoRoute(
                   path: 'write',
@@ -186,8 +194,25 @@ final goRouter = GoRouter(
                   builder: (context, state) {
                     final comp = state.extra as CompetitionModel;
                     return CompetitionDetailPage(comp: comp);
+                GoRoute(
+                  path: 'freeboard/post',
+                  builder: (context, state) {
+                    final post = state.extra as PostModel;
+                    return FreeBoardPostPage(post: post);
                   },
                 ),
+                GoRoute(
+                  path: 'freeboard/write',
+                  builder: (context, state) => const FreeBoardWritingPage(),
+                ),
+                GoRoute(
+                  path: 'freeboard/edit',
+                  builder: (context, state) {
+                    final post = state.extra as PostModel;
+                    return FreeBoardEditPage(post: post);
+                  },
+                ),
+
 
                 // 🔹 뉴스
                 GoRoute(

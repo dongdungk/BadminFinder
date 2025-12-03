@@ -11,11 +11,6 @@ class LocalStatusPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Container(
-            //     width: double.maxFinite,
-            //     height: 50,
-            //     child: Status_Tabbar()
-            // ),
             Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
@@ -77,7 +72,7 @@ class LocalStatusPage extends StatelessWidget {
                       child: Column(
                         spacing: 30,
                         children: [
-                          Text('그래프라인',style: TextStyle(fontSize: 15),),
+                          Text('준비중입니다',style: TextStyle(fontSize: 15),),
 
                         ],
                       ),
