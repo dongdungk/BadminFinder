@@ -1,16 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:seokju/router.dart';
-import 'status_tabbar.dart';
-
-
-
-// class compare extends StatelessWidget {
-//   final List<Tab> myTabs = <Tab>[
-//     Tab(text: '시설 분석',),
-//     Tab(text: '지역별 비교',),
-//     Tab(text: '체육관별 비교',),
-//   ];
 
 
 
@@ -24,11 +13,6 @@ class GymCompareStatPage extends StatelessWidget {
       Column(
         spacing: 5,
         children: [
-          // Container(
-          //     width: double.maxFinite,
-          //     height: 50,
-          //     child: Status_Tabbar()
-          // ),
           Container(// 체육관 명
             decoration: BoxDecoration(
               border: Border.all(width: 1,color: Color(0xffE5E7EB)),
@@ -396,7 +380,7 @@ class GymCompareStatPage extends StatelessWidget {
             ),
             child: ElevatedButton(
                 onPressed: (){
-                  // context.push('/static/SearchGym');
+                  context.push('/static/SearchGym');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xff155DFC),
