@@ -200,7 +200,7 @@ packages:
       sha256: a06775d1df6dd90f5fa3fe9e221b988dcbc221e73a0f8951136536e6d5e548e6
       url: "https://pub.dev"
     source: hosted
-    version: "3.6.22"
+    version: "3.11.0"
   fl_chart:
     dependency: "direct main"
     description:
@@ -209,7 +209,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-    version: "3.11.0"
   flutter:
     dependency: "direct main"
     description: flutter

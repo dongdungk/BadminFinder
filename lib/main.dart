@@ -31,7 +31,7 @@ import 'map/viewmodel/facility_photo_viewmodel.dart'; //
 
 //커뮤니티 provider import
 import 'community/view_model/freeboard/freeboard_view_model.dart';
-import 'community/view_model/freeboard/writing_view_model.dart'; // ⭐️ CommentViewModel 임포트 추가
+//import 'community/view_model/freeboard/writing_view_model.dart'; // ⭐️ CommentViewModel 임포트 추가
 import 'community/view_model/news/news_view_model.dart';
 // 💡 Firebase 초기화 및 객체 생성 순서 조정 (오류 해결)
 void main() async {
@@ -53,7 +53,7 @@ void main() async {
   final Photo_Alias.PhotoService photoService = Photo_Alias.PhotoService();
 
   //대회 api 서비스 생성
-  final competitionApiService = CompetitionApiService();
+  //final competitionApiService = CompetitionApiService();
 
   runApp(
     MultiProvider(
@@ -70,21 +70,35 @@ void main() async {
           create: (_) => LoginViewModel(authService),
         ),
 
+        ChangeNotifierProvider(
+         create: (_) => FacilityReviewViewModel(reviewService),
+        ),
+
+
+        ChangeNotifierProvider(
+          create: (_) => SearchViewModel(facilityService),
+        ),
+
+
+        ChangeNotifierProvider(
+         create: (_) => FacilityPhotoViewModel(photoService),
+        ),
+
         // 3. [Facility Detail VM] - ReviewService가 생성자에 필요하다고 가정하고 추가
         ChangeNotifierProvider(
           create: (_) => FacilityDetailViewModel(facilityService, photoService, reviewService),
         ),
 
         // 4. [Community ViewModels]
-        ChangeNotifierProvider(
-          create: (_) => FreeBoardViewModel()..loadInitialData(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CommentViewModel(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CompetitionViewModel()..loadCompetitions(),
-        ),
+        //ChangeNotifierProvider(
+          //create: (_) => FreeBoardViewModel()..loadInitialData(),
+        //),
+        // ChangeNotifierProvider(
+        //   create: (_) => CommentViewModel(),
+        // ),
+        // ChangeNotifierProvider(
+        //   create: (_) => CompetitionViewModel()..loadCompetitions(),
+        // ),
         //자유게시판 Firestore CRUD
         ChangeNotifierProvider(
           create: (_) => FreeBoardViewModel(),
