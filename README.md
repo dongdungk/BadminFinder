@@ -1,16 +1,144 @@
-# seokju
+# 🏸 BadminFinder: 스포츠 시설 정보 및 커뮤니티 플랫폼
 
-A new Flutter project.
+BadminFinder는 위치 기반 서비스와 사용자 참여(Crowdsourcing)를 결합하여 공공 체육 시설 정보를 실시간으로 제공하고, 사용자 간의 활발한 커뮤니티 활동을 지원하는 Flutter 기반의 모바일 애플리케이션입니다.
 
-## Getting Started
+## 🚀 프로젝트 개요 및 기술 스택
 
-This project is a starting point for a Flutter application.
+| 구분 | 내용 |
+| :--- | :--- |
+| **주요 목표** | 공공 체육 시설에 대한 투명하고 정확한 정보 제공, 위치 기반 현장 태깅 및 리뷰 기능을 통한 데이터 품질 향상, 통합 커뮤니티 구축. |
+| **개발 언어** | Dart |
+| **프론트엔드/프레임워크** | Flutter |
+| **상태 관리/아키텍처** | Provider, MVVM (Model-View-ViewModel) |
+| **핵심 백엔드/DB** | Firebase (Authentication, Firestore) |
+| **주요 외부 API** | 서울시 공공체육시설 API, Google Maps API |
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🛠️ 개발 환경 및 사용 도구 (팀 공통 및 개인별)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+본 프로젝트 개발에 사용된 핵심 도구 및 플랫폼입니다.
+
+* **IDE:** **Android Studio** (Flutter/Dart 개발 환경)
+* **디자인/프로토타이핑:** **Figma** (UI/UX 설계)
+* **프레임워크:** **Flutter** (멀티 플랫폼 앱 개발)
+* **백엔드:** **Firebase** (인증, 데이터베이스, 스토리지 등)
+* **위치/지도:** **Google Maps API**
+* **패키지 관리:** **GoRouter, Provider, fl\_chart** 등
+
+---
+
+## 💻 1. 서비스 내용 상세 작성 (주요 기능 및 담당)
+
+### 1. 인증 및 계정 관리 (담당: 김동영)
+
+Firebase Authentication을 기반으로 안정적이고 다양한 로그인 경로를 제공합니다.
+
+* **이메일/비밀번호:** Firebase Authentication을 활용하여 표준 회원가입 및 로그인 기능 구현.
+* **소셜 로그인:** **Google Sign-In** 기능을 구현하고 Firebase와 연동하여 사용자 편의성 증대.
+* **로그인 안정화:** **GoRouter**와 **StreamProvider** 간의 충돌 문제를 **Future.microtask** 등의 비동기 기법으로 해결하여, 로그인 상태 변화 시에도 안정적인 화면 전환을 보장합니다.
+
+| 기술 스택 | 구현 내용 |
+| :--- | :--- |
+| Firebase Authentication | 이메일 기반 사용자 계정 및 세션 관리 |
+| Google Sign-In | 소셜 로그인 기능 구현 |
+| GoRouter, StreamProvider | 로그인 상태 변화에 따른 라우팅 안정화 로직 |
+
+### 2. 시설 검색 및 조회 (담당: 김동영)
+
+서울시 공공 데이터를 활용하여 강력한 통합 검색 기능을 구현했습니다.
+
+* **통합 검색:** **서울시 공공체육시설 API**로 데이터를 가져와, **한글/영문 검색어** 모두를 지역구(`district`)와 시설명(`name`) 기준으로 **분리 필터링**하는 고급 로직 구현.
+* **상세 설명 연동:** 포털 데이터에 맞춰 각 시설별 **운영 시간, 요금, 주소** 등 상세 설명을 정확하게 연동하여 사용자에게 표시.
+
+| 기술 스택 | 구현 내용 |
+| :--- | :--- |
+| Flutter/Dart, Provider | API 데이터 처리 및 상태 관리 |
+| 서울시 공공체육시설 API | 공공 데이터 연동 및 조회 |
+
+### 3. 지도 및 위치 기능 (담당: 김동영)
+
+위치 기반 태깅 서비스의 핵심인 지도 기능과 사용자 참여 기능을 구현했습니다.
+
+* **실시간 위치 인식:** **Google Maps API**를 사용하여 사용자 위치를 지도에 실시간 표시하고, 주변 시설 마커를 렌더링.
+* **현장 태깅 (위치 기반 정보 제공):** 사용자가 시설 근처에서 **GPS 위치**를 기반으로 시설의 **최신 상태 태그(Crowdsourcing)**를 등록하고 공유할 수 있도록 구현.
+* **지문 등록:** Google Maps API 사용을 위해 **릴리즈 SHA-1 지문**을 GCP에 등록하여 One Store 등 배포 환경에서 지도가 정상 작동하도록 안정화 조치 완료.
+
+| 기술 스택 | 구현 내용 |
+| :--- | :--- |
+| Google Maps API | 지도 렌더링, 사용자 위치 추적 |
+| Geolocation, Firestore | GPS 기반 위치 정보 확인 및 태그 데이터 저장 |
+
+---
+
+### 4. 사용자 편의 기능 (담당: 양석주)
+
+사용자 활동 및 데이터 관리를 위한 핵심 편의 기능입니다.
+
+* **즐겨찾기:** 사용자가 원하는 시설을 즐겨찾기 목록에 추가하고 관리하는 기능 구현.
+* **리뷰 CRUD:** **ReviewWriteModal**을 통한 리뷰 작성(Create), 조회(Read), 수정(Update), 삭제(Delete) 기능 구현 및 **Firebase Firestore** 연동 완료.
+* **데이터 관리:** 모든 상태 관리 및 데이터 연동에 **Provider 패턴**을 사용하여 효율적인 상태 동기화 및 관리 구현.
+
+| 기술 스택 | 구현 내용 |
+| :--- | :--- |
+| Firebase Firestore | 즐겨찾기 및 리뷰 데이터베이스 관리 |
+| Provider, GoRouter | 상태 관리 및 라우팅 |
+
+### 5. 라우팅 및 아키텍처 (담당: 양석주)
+
+앱의 전반적인 구조와 네비게이션 시스템을 MVVM 기반으로 설계했습니다.
+
+* **MVVM 아키텍처:** 데이터(Model), 비즈니스 로직(ViewModel), UI(View)를 분리하여 코드의 재사용성과 유지보수성을 극대화.
+* **라우팅 시스템:** 모든 화면 이동 및 탭 전환에 **go\_router** 방식을 사용하여 앱의 네비게이션 구조를 명확하게 관리.
+
+| 기술 스택 | 구현 내용 |
+| :--- | :--- |
+| MVVM 아키텍처 | 코드 구조 설계 |
+| GoRouter | 통합 네비게이션 시스템 구축 |
+
+### 6. 라우팅 및 화면 네비게이션 구조 (커뮤니티) (담당: 양석주)
+
+커뮤니티 기능을 위해 복잡한 하단 탭과 페이지 이동을 `go_router`로 관리합니다.
+
+* **GoRouter 기반 통합 라우팅 시스템:** 모든 화면 전환 및 하단 탭 이동을 `go_router` 기반으로 관리.
+* **StatefulShellRoute 적용:** 커뮤니티 내부 페이지 이동 시 하단 탭의 상태를 유지하는 **StatefulShellRoute** 기능 적용.
+* **데이터 전달:** 게시글 상세 진입 시 `state.extra`를 통해 **객체 데이터(PostModel)**를 직접 전달하며 MVVM 구조 간의 의존성을 최소화.
+* **주요 라우팅 경로:** `/community` (커뮤니티 루트), `/community/freeboard/post` (게시글 상세, PostModel 전달), `/news` (뉴스 목록) 등 명확한 구조 설계.
+
+### 7. 자유게시판 (FreeBoard) 기능 (담당: 양석주)
+
+사용자 간 정보 공유를 위한 핵심 커뮤니티 기능을 구현했습니다.
+
+* **게시글 CRUD 기능 구현:** **Firestore 기반의 실시간 스트림** 데이터 처리를 통해 게시글 작성(Create), 조회(Read), 수정(Update), 삭제(Delete) 기능을 완성.
+* **상세 기능 설명:** 게시글 등록 시 UI 실시간 반영, 조회수 자동 증가(+1), **신고 시 게시글 숨김 처리 및 신고 카운트 업데이트** 로직 구현.
+
+| 기술 스택 | 구현 내용 |
+| :--- | :--- |
+| Firebase Firestore | 게시글 데이터 실시간 스트림 및 CRUD |
+| Provider, MVVM | 상태 변경 감지 및 UI 자동 리렌더링 |
+
+---
+
+### 8. 뉴스 (News) 서비스 (담당: 김태호)
+
+최신 정보를 제공하여 사용자의 관심을 유지하고 앱의 활용도를 높입니다.
+
+* **뉴스 데이터 수집 및 UI 렌더링:** 배드민턴 및 체육 관련 **최신 뉴스 API 연동** 및 UI 렌더링.
+* **상세 페이지 이동:** 기사 항목 클릭 시 `/news/seemore` 라우트로 이동하여 상세 페이지 제공하며, **외부 원문 기사 링크 이동 기능** 제공 (URL launcher 기반).
+* **MVVM 설계 적용:** 비동기 API 호출, 데이터 저장 및 상태 업데이트 로직을 ViewModel에 분리하여 관리.
+
+| 기술 스택 | 구현 내용 |
+| :--- | :--- |
+| HTTP API, Provider | 뉴스 데이터 연동 및 상태 관리 |
+| MVVM, GoRouter | 아키텍처 분리 및 화면 네비게이션 |
+
+### 9. 통계 기능 (담당: 김태호)
+
+관리자 및 사용자에게 시설 이용 현황에 대한 유용한 인사이트를 제공합니다.
+
+* **그래프 시각화:** **fl\_chart** 라이브러리를 활용하여 시설 이용량에 대한 정보를 그래프로 출력.
+* **그래프 카테고리:** 시설 이용 정보를 단순히 총 이용량이 아닌 **‘연령별’, ‘시간대별’, ‘성별’**로 각각 나누어 유동적으로 해당 그래프에 출력되도록 구현.
+
+| 기술 스택 | 구현 내용 |
+| :--- | :--- |
+| fl\_chart | 데이터 시각화 라이브러리 |
